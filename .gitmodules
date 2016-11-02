@@ -1,3 +1,6 @@
 [submodule "TinyColor"]
 	path = TinyColor
 	url = https://github.com/GreatBigBore/TinyColor.git
+[submodule "phaser"]
+	path = phaser
+	url = https://github.com/GreatBigBore/phaser.git
