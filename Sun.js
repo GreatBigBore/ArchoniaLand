@@ -57,12 +57,12 @@ if(typeof window === "undefined") {
       
       Archonia.Cosmos.Year.season.scale.setTo(1, 1);  // could make this bitmap smaller; come back to it
       Archonia.Cosmos.Year.season.anchor.setTo(0.5, 0.5);
-      Archonia.Cosmos.Year.season.alpha = 0;
+      Archonia.Cosmos.Year.season.alpha = 0.1;
       Archonia.Cosmos.Year.season.visible = true;
 
-      Archonia.Cosmos.Sun.dailyarknessTween = Archonia.Engine.game.add.tween(Archonia.Cosmos.Year.season).to(
+     /* Archonia.Cosmos.Sun.dailyarknessTween = Archonia.Engine.game.add.tween(Archonia.Cosmos.Year.season).to(
         {alpha: 1}, Archonia.Axioms.dayLength, Archonia.Cosmos.Sun.easingFunction, true, 0, -1, true
-      );
+      );*/
     },
     
     tick: function() { Archonia.Cosmos.Year.setSeason(); }
@@ -95,13 +95,13 @@ if(typeof window === "undefined") {
       Archonia.Cosmos.Sun.darkness.scale.setTo(scale, scale); // Big enough to cover the world
 
       Archonia.Cosmos.Sun.darkness.anchor.setTo(0.5, 0.5);
-      Archonia.Cosmos.Sun.darkness.alpha = Archonia.Axioms.darknessAlphaHi; // Note: dark sprite, so high alpha means dark world
-      Archonia.Cosmos.Sun.darkness.tint = parseInt(tinycolor('hsl(240, 100%, 50%)').toHex(), 16);
+      Archonia.Cosmos.Sun.darkness.alpha = Archonia.Axioms.darknessAlphaLo; // Note: dark sprite, so high alpha means dark world
+      Archonia.Cosmos.Sun.darkness.tint = parseInt(tinycolor('hsl(0, 0%, 0%').toHex(), 16);
       
-      Archonia.Cosmos.Sun.darkness.visible = false;
+      Archonia.Cosmos.Sun.darkness.visible = true;
 
       Archonia.Cosmos.Sun.darknessTween = Archonia.Engine.game.add.tween(Archonia.Cosmos.Sun.darkness).to(
-        {alpha: Archonia.Axioms.darknessAlphaLo}, Archonia.Axioms.dayLength, Archonia.Cosmos.Sun.easingFunction, true, 0, -1, true
+        {alpha: Archonia.Axioms.darknessAlphaHi}, Archonia.Axioms.dayLength, Archonia.Cosmos.Sun.easingFunction, true, 0, -1, true
       );
   
       Archonia.Cosmos.Sun.halfDayNumber = 0;  // Creation happens at midnight
@@ -115,7 +115,7 @@ if(typeof window === "undefined") {
       Archonia.Cosmos.Sun.darknessTween.onLoop.add(function() {
         Archonia.Cosmos.Sun.halfDayNumber++;
 
-        if(Archonia.Cosmos.Sun.halfDayNumber % 2 === 0) {
+        if(Archonia.Cosmos.Sun.halfDayNumber % 2 === 1) {
           Archonia.Cosmos.Year.seasonalSkyHue += 360 / Archonia.Axioms.daysPerYear;
           
           if(Archonia.Cosmos.Year.seasonalSkyHue > 360) { Archonia.Cosmos.Year.seasonalSkyHue = 0; }

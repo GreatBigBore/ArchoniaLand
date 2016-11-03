@@ -31,7 +31,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       this.h = hsl.h; this.s = hsl.s * 100; this.L = hsl.l * 100;
     
       this.tween = Archonia.Engine.game.add.tween(this).to(
-          { L: 35 }, 5 * 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true
+          { L: 25 }, 5 * 1000, Phaser.Easing.Quartic.InOut, true, 0, -1, true
       );
       
       var _this = this;
