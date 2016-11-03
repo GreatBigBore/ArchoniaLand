@@ -23,27 +23,6 @@ var breed = function(parent) {
   }
 };
 
-// Have to delay creation of the prototype because it needs XY,
-// which doesn't exist until later, when XY.js gets loaded
-var generateArchonoidPrototype = function() { 
-  var Archonoid = function(archonite) { this.archonite = archonite; Archonia.Form.XY.call(this); };
-
-  Archonoid.prototype = Object.create(Archonia.Form.XY.prototype);
-  Archonoid.prototype.constructor = Archonoid;
-
-  Object.defineProperty(Archonoid.prototype, 'x', {
-    get: function x() { return this.archonite.x; },
-    set: function x(v) { this.archonite.x = v; }
-  });
-
-  Object.defineProperty(Archonoid.prototype, 'y', {
-    get: function y() { return this.archonite.y; },
-    set: function y(v) { this.archonite.y = v; }
-  });
-  
-  Archonia.Form.Archonoid = Archonoid;
-};
-
 var getArchon = function() {
   var archon = null;
   
@@ -86,7 +65,6 @@ Archonia.Cosmos.Archonery = {
   start: function() {
     Archonia.Cosmos.momentOfCreation = true;
 
-    generateArchonoidPrototype();
     Archonia.Cosmos.Dronery.start();
     for(var i = 0; i < Archonia.Axioms.archonCount; i++) { breed(); }
 
