@@ -96,7 +96,7 @@ Archon.prototype = {
       position: null,
       sensedArchons: null,
       sensedSkinnyManna: null,
-      targetPosition: new TargetPosition(),
+      targetPosition: new Archonia.Form.TargetPosition(),
       tempInput: null,
       velocity: null,
       where: Archonia.Form.XY(),
@@ -118,25 +118,6 @@ Archon.prototype = {
   },
 
   toggleMotion: function() { if(this.moving) { this.legs.stop(); } this.moving = !this.moving; }
-};
-
-var TargetPosition = function() {
-  this.targetPosition = Archonia.Form.XY();
-  
-  this.clear();
-};
-
-TargetPosition.prototype = {
-  clear: function() { this.dirty = false; },
-  
-  get: function() { if(this.dirty) { return this.targetPosition; } else { return false; } },
-  
-  set: function(targetPosition, damper, damperDecay) {
-    this.targetPosition.set(targetPosition);
-    this.damper = damper; this.damperDecay = damperDecay;
-  
-    this.dirty = true;
-  }
 };
 
 Archonia.Form.Archon = Archon;

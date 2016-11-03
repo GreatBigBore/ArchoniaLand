@@ -35,46 +35,80 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       );
       
       var _this = this;
-      setInterval(function() {
-        _this.sprite.tint = _this.getColor();
-      }, 1);
+      setInterval(function() { _this.sprite.tint = _this.getColor(); }, 60);
     },
   };
   
   var Vent = function() {
-    Archonia.Essence.BitmapFactory.makeBitmap("archoniaVent");
-    
-    var a = Archonia.Engine.game.add.sprite(0, 0, 'vent'/*Archonia.Engine.game.cache.getBitmapData('archoniaVent'*/);
-
-    this.sprite = Archonia.Engine.game.add.sprite(
-      Archonia.Essence.gameCenter.x, Archonia.Essence.gameCenter.y, Archonia.Engine.game.cache.getBitmapData('archoniaGoo')
-    );
-    
-    this.sprite.addChild(a);
-    
-    Archonia.Engine.game.physics.arcade.enable(this.sprite);
-
-    a.anchor.setTo(0.5, 0.5);
-    a.scale.setTo(1, 1);
-    a.scale.setTo(0.6, 0.6);
-    
-    this.sprite.scale.setTo(0.4, 0.4);
-    this.sprite.anchor.setTo(0.5, 0.5);
-    this.sprite.alpha = 1;
-    
-    a.tint = 0;
-    
-    this.sprite.visible = true;
-    
-    Archonia.Cosmos.Sun.darknessTween = Archonia.Engine.game.add.tween(Archonia.Cosmos.Sun.darkness).to(
-      {alpha: Archonia.Axioms.darknessAlphaLo}, Archonia.Axioms.dayLength, Archonia.Cosmos.Sun.easingFunction, true, 0, -1, true
-    );
-    
-    this.colorHandler = new TweenColor(this.sprite, "hsl(0, 100%, 50%)");
+    this.phaserSetup();
+    this.archoniaSetup();
   };
   
   Vent.prototype = {
+    state: {
+      archonUniqueId: "Vent",
+      firstTickAfterLaunch: true,
+      frameCount: 0,
+      position: null,
+      targetPosition: new Archonia.Form.TargetPosition(),
+      velocity: null,
+      whenToRespin: 0
+    },
     
+    archoniaSetup: function() {
+      this.state.position = new Archonia.Form.Archonoid(this.sprite.body.center);
+      this.state.velocity = new Archonia.Form.Archonoid(this.sprite.body.velocity);
+      this.antwalk = new Archonia.Form.Antwalk(this, 480); this.antwalk.launch();
+      this.legs = new Archonia.Form.Legs(this); this.legs.launch(5, 1);
+    },
+    
+    phaserSetup: function() {
+      Archonia.Essence.BitmapFactory.makeBitmap("archoniaVent");
+    
+      var a = Archonia.Engine.game.add.sprite(0, 0, 'vent'/*Archonia.Engine.game.cache.getBitmapData('archoniaVent'*/);
+
+      this.sprite = Archonia.Engine.game.add.sprite(
+        Archonia.Essence.gameCenter.x, Archonia.Essence.gameCenter.y, Archonia.Engine.game.cache.getBitmapData('archoniaGoo')
+      );
+    
+      this.sprite.addChild(a);
+    
+      Archonia.Engine.game.physics.arcade.enable(this.sprite);
+
+      a.anchor.setTo(0.5, 0.5);
+      a.scale.setTo(1, 1);
+      a.scale.setTo(0.6, 0.6);
+    
+      this.sprite.scale.setTo(0.4, 0.4);
+      this.sprite.anchor.setTo(0.5, 0.5);
+      this.sprite.alpha = 1;
+      this.sprite.body.angularVelocity = 1;
+    
+      a.tint = 0;
+    
+      this.sprite.visible = true;
+      this.colorHandler = new TweenColor(this.sprite, "hsl(0, 100%, 50%)");
+    },
+    
+    tick: function() {
+      if(this.state.frameCount > this.state.whenToRespin) {
+        
+        if(this.sprite.body.angularVelocity === 0) {
+          var directions = [ -1, 0, 1 ];
+          var i = Archonia.Axioms.integerInRange(0, 3);
+          var v = directions[i];
+          this.sprite.body.angularVelocity = v * 5;
+        } else {
+          this.sprite.body.angularVelocity = 0;
+        }
+
+        this.state.whenToRespin = this.state.frameCount + Archonia.Axioms.integerInRange(0, 600);
+          
+      }
+
+      this.state.frameCount++;
+      this.antwalk.tick(true, "random");
+      this.legs.tick(); }
   };
   
   Archonia.Cosmos.TheVent = { start: function() { Archonia.Cosmos.TheVent = new Vent(); } };
