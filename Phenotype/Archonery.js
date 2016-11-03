@@ -79,12 +79,9 @@ Archonia.Cosmos.Archonery = {
   
   breed: function(parentId) { var p = getArchonById(parentId); breed(p); },
   
-  getArchonById: function(id) { return getArchonById(id); },
+  feed: function(/*diner*/) { console.log("feed"); },
   
-  senseSkinnyManna: function(sensor, manna) {
-    var archon = getArchonById(sensor.archonId);
-    archon.senseSkinnyManna(manna);
-  },
+  getArchonById: function(id) { return getArchonById(id); },
   
   start: function() {
     Archonia.Cosmos.momentOfCreation = true;

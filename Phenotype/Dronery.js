@@ -147,6 +147,9 @@ var getDronoid = function() {
 };
 
 var handleOverlaps = function() {
+  Archonia.Engine.game.physics.arcade.overlap(
+    spritePools.sensors, Archonia.Cosmos.TheVent.sprite, Archonia.Cosmos.Archonery.feed
+  );
 };
 
 var setupSpritePools = function() {

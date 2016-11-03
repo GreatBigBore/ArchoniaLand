@@ -53,7 +53,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
 
     preload: function() {
-      Archonia.Engine.game.load.image('floor', 'assets/floor.png');
+      Archonia.Engine.game.load.image('vent', 'assets/urchin.png');
     },
     
     render: function() {
