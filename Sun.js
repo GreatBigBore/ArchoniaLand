@@ -82,43 +82,9 @@ if(typeof window === "undefined") {
       );
     },
     
-    getTemperature: function(w, wY) {
-      if(w === undefined) { Archonia.Essence.hurl(new Error("Bad arguments to getTemperature()")); }
-
-      var where = Archonia.Form.XY(w, wY).floored();
-
-      var rgb = {};
-      Archonia.Cosmos.Sea.bm.getPixelRGB(where.x, where.y, rgb, true);
-
-      var waterDepthComponent =
-        Archonia.Essence.worldTemperatureRange.convertPoint(rgb.l, Archonia.Essence.worldColorRange);
-
-      var sunComponent =
-        Archonia.Essence.worldTemperatureRange.convertPoint(
-          Archonia.Cosmos.Sun.darkness.alpha, Archonia.Essence.darknessRange
-        );
-
-      // Give luma and sun most of the weight. The y-axis thing is there
-      // just to help them not get stuck in the luma dead zone(s)
-      var final = (waterDepthComponent + sunComponent) / 2;
-
-      return final;
-    },
+    getTemperature: function() { return 0; },
     
-    getWorldColorRange: function() {
-      var rgb = {};
-
-      Archonia.Cosmos.Sea.bm.getPixelRGB(Archonia.Axioms.gameRadius, 10, rgb, true);
-      var lumaTL = rgb.l;
-
-      Archonia.Cosmos.Sea.bm.getPixelRGB(
-        Math.floor(Archonia.Axioms.gameRadius), Math.floor(Archonia.Axioms.gameHeight - 10), rgb, true
-      );
-      var lumaBR = rgb.l;
-
-      // Bottom right is the cold end, top left is the hot
-      return new Archonia.Form.Range(lumaBR, lumaTL);
-    },
+    getWorldColorRange: function() { return new Archonia.Form.Range(0, 1); },
     
     ignite: function() {
       Archonia.Cosmos.Sun.darkness = Archonia.Engine.game.add.sprite(
@@ -132,7 +98,7 @@ if(typeof window === "undefined") {
       Archonia.Cosmos.Sun.darkness.alpha = Archonia.Axioms.darknessAlphaHi; // Note: dark sprite, so high alpha means dark world
       Archonia.Cosmos.Sun.darkness.tint = parseInt(tinycolor('hsl(240, 100%, 50%)').toHex(), 16);
       
-      Archonia.Cosmos.Sun.darkness.visible = true;
+      Archonia.Cosmos.Sun.darkness.visible = false;
 
       Archonia.Cosmos.Sun.darknessTween = Archonia.Engine.game.add.tween(Archonia.Cosmos.Sun.darkness).to(
         {alpha: Archonia.Axioms.darknessAlphaLo}, Archonia.Axioms.dayLength, Archonia.Cosmos.Sun.easingFunction, true, 0, -1, true

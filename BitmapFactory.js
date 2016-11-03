@@ -51,17 +51,32 @@ if(typeof window === "undefined") {
   
   Archonia.Essence.BitmapFactory = {
     
+    archoniaVent: function() {
+      var bm = Archonia.Engine.game.add.bitmapData(100, 100);
+      var cx = bm.context;
+
+      var g = cx.createRadialGradient(50, 50, 1, 50, 50, 50);
+
+      g.addColorStop(0.00, 'hsla(0, 0%, 0%, 0)');
+      g.addColorStop(1.00, 'hsla(0, 0%, 0%, 1)');
+
+      cx.fillStyle = g;
+      bm.circle(50, 50, 50);
+
+      bm.update();
+      Archonia.Engine.game.cache.addBitmapData('archoniaVent', bm);
+    
+      return new Archonia.Essence.Bitmap(bm);
+    },
+    
     archoniaSea: function() {
       var bm = Archonia.Engine.game.add.bitmapData(Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight);
       var cx = bm.context;
 
       var g = cx.createLinearGradient(Archonia.Axioms.gameRadius, 0, Archonia.Axioms.gameRadius, Archonia.Axioms.gameHeight);
 
-      g.addColorStop(0.00, 'hsla(202, 100%, 100%, 1)');
-      g.addColorStop(0.40, 'hsla(202, 100%, 50%, 1)');
-      g.addColorStop(0.70, 'hsla(202, 100%, 50%, 1)');
-      g.addColorStop(0.90, 'hsla(218, 100%, 40%, 1)');
-      g.addColorStop(1.00, 'hsla(218, 100%, 00%, 1)');
+      g.addColorStop(1.00, 'hsla(20, 40%, 65%, 1)');
+      g.addColorStop(0.00, 'hsla(20, 70%, 65%, 1)');
 
       cx.fillStyle = g;
       cx.fillRect(0, 0, Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight);
