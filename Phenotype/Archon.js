@@ -48,7 +48,7 @@ Archon.prototype = {
 
     this.senses.launch();
     this.forager.launch();
-    this.legs.launch();
+    this.legs.launch(this.genome.maxMVelocity, this.genome.maxMAcceleration);
     this.goo.launch();
 
     var x = null, y = null;

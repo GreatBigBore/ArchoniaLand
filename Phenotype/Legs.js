@@ -14,7 +14,6 @@ if(typeof window === "undefined") {
 
 Archonia.Form.Legs = function(archon) {
 
-  this.genome = Archonia.Cosmos.Genomery.makeGeneCluster(archon, "legs");
   this.state = archon.state;
 
   this.damper = 10;
@@ -33,7 +32,8 @@ Archonia.Form.Legs.prototype = {
     this.running = false;
   },
   
-  launch: function() {
+  launch: function(maxMVelocity, maxMAcceleration) {
+    this.maxMVelocity = maxMVelocity; this.maxMAcceleration = maxMAcceleration;
   },
   
   reflect: function(vertical) {
@@ -78,7 +78,7 @@ Archonia.Form.Legs.prototype = {
     if(damper === undefined) { damper = 10; }
     if(damperDecay === undefined) { damperDecay = 0; }
     
-    this.currentMVelocity = this.genome.maxMVelocity;
+    this.currentMVelocity = this.maxMVelocity;
     
     this.damper = damper; this.damperDecay = damperDecay;
 
@@ -91,7 +91,7 @@ Archonia.Form.Legs.prototype = {
   },
   
   setTargetVelocity: function(v) {
-    this.currentMVelocity = this.genome.maxMVelocity;
+    this.currentMVelocity = this.maxMVelocity;
 
     // Force update on next tick, in case we're in the middle of a maneuver
     this.nextUpdate = 0;
@@ -136,7 +136,7 @@ Archonia.Form.Legs.prototype = {
 
     } else if(this.targetType === 'angle') {
       
-      this.targetVelocity = Archonia.Form.XY.fromPolar(this.genome.maxMVelocity, this.targetAngle);
+      this.targetVelocity = Archonia.Form.XY.fromPolar(this.maxMVelocity, this.targetAngle);
       optimalDeltaV.set(this.state.velocity.minus(this.targetVelocity));
       
     } else if(this.targetType === 'velocity') {
@@ -182,17 +182,17 @@ Archonia.Form.Legs.prototype = {
     var bestDeltaV = curtailedV.minus(this.state.velocity);
     var bestDeltaM = bestDeltaV.getMagnitude();
 
-    if(bestDeltaM > this.genome.maxMAcceleration) {
+    if(bestDeltaM > this.maxMAcceleration) {
       this.needUpdate = true;
     
-      bestDeltaV.scalarMultiply(this.genome.maxMAcceleration / bestDeltaM);
+      bestDeltaV.scalarMultiply(this.maxMAcceleration / bestDeltaM);
     }
     
     this.state.velocity.add(bestDeltaV);
 
-    if(this.state.velocity.getMagnitude() > this.genome.maxMVelocity) {
+    if(this.state.velocity.getMagnitude() > this.maxMVelocity) {
       this.state.velocity.normalize();
-      this.state.velocity.scalarMultiply(this.genome.maxMVelocity);
+      this.state.velocity.scalarMultiply(this.maxMVelocity);
     }
     
     // Note: doing it this way means we're never actually setting
