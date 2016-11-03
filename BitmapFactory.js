@@ -82,7 +82,7 @@ if(typeof window === "undefined") {
       cx.fillRect(0, 0, Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight);
 
       bm.update();
-      Archonia.Engine.game.add.image(0, 0, bm);
+      Archonia.Engine.game.add.image(-50, -1000, 'floor');
     
       return new Archonia.Essence.Bitmap(bm);
     },
@@ -119,7 +119,7 @@ if(typeof window === "undefined") {
       );
 
       cx.fill();
-
+      
       Archonia.Engine.game.cache.addBitmapData('archoniaGoo', bm);
     
       return new Archonia.Essence.Bitmap(bm);
