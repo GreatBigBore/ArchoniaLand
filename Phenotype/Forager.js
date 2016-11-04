@@ -34,7 +34,7 @@ Forager.prototype = {
       if(tempSignal > 0) { this.where = "randomDownOnly"; } else { this.where = "randomUpOnly"; }
       
     } else {
-      var currentTemp = Archonia.Cosmos.TheSun.getTemperature(this.state.position);
+      var currentTemp = Archonia.Cosmos.TheAtmosphere.getTemperature(this.state.position);
       var scaledTemp = Archonia.Essence.centeredZeroRange.convertPoint(currentTemp, Archonia.Essence.worldTemperatureRange);
       var scaledY = Archonia.Essence.centeredZeroRange.convertPoint(this.state.position.y, yAxisRange);
       

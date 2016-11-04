@@ -49,7 +49,8 @@ Senses.prototype = {
   senseHunger: function() { this.state.hungerInput.store(this.state.embryoCalorieBudget); },
   senseSkinnyManna: function(manna) { this.sensedSkinnyManna.push(manna); },
   senseTemp: function() {
-    this.state.tempInput.store(Archonia.Cosmos.TheSun.getTemperature(this.state.position) - this.genome.optimalTemp);
+    var t = Archonia.Cosmos.TheAtmosphere.getTemperature(this.state.position);
+    this.state.tempInput.store(t - this.genome.optimalTemp);
   },
   
   tick: function() { this.transferSpatialInputs(); this.senseTemp(); this.senseHunger(); },

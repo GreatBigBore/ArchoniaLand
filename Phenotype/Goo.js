@@ -149,7 +149,7 @@ Archonia.Form.Goo.prototype = {
   getSensorCost: function() { return 15 * this.genome.sensorScale / Archonia.Axioms.standardSensorScale; },
 
   getTempCost: function() {
-    return Archonia.Essence.getTempCost(this.state.position, this.getMass(), this.genome.optimalTemp, this.genome.tempRange);
+    Archonia.Essence.getTempCost(this.state.position, this.getMass(), this.genome.optimalTemp, this.genome.tempRange);
   },
   
   howHungryAmI: function() {

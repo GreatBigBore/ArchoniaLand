@@ -26,7 +26,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       Archonia.Engine.letThereBeALoggingMechanism();
       Archonia.Engine.letThereBeRanges();
       Archonia.Engine.letThereBeBitmaps();
-      Archonia.Engine.letThereBeDaysAndSeasons();
+      Archonia.Engine.letThereBeElements();
       Archonia.Engine.letThereBeLivingThings();
     },
 
@@ -44,8 +44,9 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       Archonia.Essence.Dbitmap = Archonia.Essence.BitmapFactory.makeBitmap('debug');
     },
     
-    letThereBeDaysAndSeasons: function() {
+    letThereBeElements: function() {
       Archonia.Cosmos.TheSun.ignite();
+      Archonia.Cosmos.TheAtmosphere.breathe();
     },
     
     letThereBeLivingThings: function() {
