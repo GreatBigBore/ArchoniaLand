@@ -27,8 +27,8 @@ var Drone = function(archon, dronoid) {
 Drone.prototype = {
   decohere: function() { this.sensor.kill(); this.avatar.kill(); this.button.kill(); },
   
-  launch: function(archonId, sensorScale, x, y) {
-    this.sensor.archonId = archonId;
+  launch: function(archonUniqueId, sensorScale, x, y) {
+    this.sensor.archonUniqueId = archonUniqueId;
     
     this.optimalTempRange.set(this.genome.optimalTempLo, this.genome.optimalTempHi);
 
@@ -135,7 +135,7 @@ var constructDronoids = function() {
 
     s.inputEnabled = true;
     s.input.enableDrag();
-    s.events.onDragStart.add(function(s) { var a = getArchonById(s.archonId); a.toggleMotion(); } );
+    s.events.onDragStart.add(function(s) { var a = getArchonById(s.archonUniqueId); a.toggleMotion(); } );
 	});
 };
 
@@ -148,7 +148,7 @@ var getDronoid = function() {
 
 var handleOverlaps = function() {
   Archonia.Engine.game.physics.arcade.overlap(
-    spritePools.sensors, Archonia.Cosmos.TheVent.sprite, Archonia.Cosmos.Archonery.feed
+    spritePools.sensors, Archonia.Cosmos.TheVent.sprite, Archonia.Cosmos.Archonery.senseVent
   );
 };
 

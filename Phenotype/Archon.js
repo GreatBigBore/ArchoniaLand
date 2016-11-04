@@ -41,6 +41,8 @@ Archon.prototype = {
     this.available = false;
     this.hasLaunched = true;
     this.state.firstTickAfterLaunch = true;
+    this.state.touched = false;
+    this.state.eat = false;
   
     this.state.frameCount = Archonia.Axioms.integerInRange(0, 60);
 
@@ -71,15 +73,9 @@ Archon.prototype = {
 
     this.drone.launch(this.state.archonUniqueId, this.genome.sensorScale, x, y);
   },
-
-  senseSkinnyManna: function(manna) {
-    var d = this.state.position.getDistanceTo(manna);
-    if(d < Archonia.Axioms.avatarRadius + manna.width) {
-      this.goo.eat(manna);
-      manna.kill();
-    } else {
-      this.senses.senseSkinnyManna(manna);
-    }
+  
+  senseVent: function() {
+    this.state.touchedVent = true;
   },
   
   setupState: function() {
@@ -87,6 +83,7 @@ Archon.prototype = {
       adultCalorieBudget: null,
       archonUniqueId: null,
       beingPoisoned: null,
+      eat: null,
       embryoCalorieBudget: null,
       encysted: null,
       firstTickAfterLaunch: null,
@@ -98,6 +95,8 @@ Archon.prototype = {
       sensedSkinnyManna: null,
       targetPosition: new Archonia.Form.TargetPosition(),
       tempInput: null,
+      touchedVent: null,
+      touchingVent: null,
       velocity: null,
       where: Archonia.Form.XY(),
     };
@@ -107,6 +106,18 @@ Archon.prototype = {
 
   tick: function() {
     this.state.frameCount++;
+    
+    if(this.state.touchedVent) {
+      if(!this.state.touchingVent) {
+        this.goo.eat({calories: 500});
+        this.state.touchingVent = true; // Don't eat again until after a new touch
+      }
+    } else {
+      this.state.touchingVent = false;
+      this.state.eat = false;
+    }
+    
+    this.state.touchedVent = false; // Sensor will turn this back on if still touching
 
     this.senses.tick();
     this.forager.tick();

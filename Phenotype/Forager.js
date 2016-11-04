@@ -93,7 +93,7 @@ Forager.prototype = {
     
     // We don't really have to tick antwalk every time, but it
     // allows me to not have to maintain any state on his behalf
-    this.antwalk.tick(!mannaInSight);
+    this.antwalk.tick(!mannaInSight, "random");
   }
 };
 

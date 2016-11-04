@@ -39,9 +39,9 @@ var getArchon = function() {
   return archon;
 };
 
-var getArchonById = function(archonId) {
+var getArchonById = function(archonUniqueId) {
   var archon = archonPool.find(function(e) {
-    return e.state.archonUniqueId === archonId;
+    return e.state.archonUniqueId === archonUniqueId;
   });
   
   return archon;
@@ -58,9 +58,12 @@ Archonia.Cosmos.Archonery = {
   
   breed: function(parentId) { var p = getArchonById(parentId); breed(p); },
   
-  feed: function(/*diner*/) { console.log("feed"); },
-  
   getArchonById: function(id) { return getArchonById(id); },
+  
+  // Baffling: the args order should be sensor, vent, as far as
+  // I can tell, based on the way we're calling the Phaser overlap
+  // function. But this works, so I guess I'll worry about it later
+  senseVent: function(vent, sensor) { var diner = getArchonById(sensor.archonUniqueId); diner.senseVent(); },
   
   start: function() {
     Archonia.Cosmos.momentOfCreation = true;
