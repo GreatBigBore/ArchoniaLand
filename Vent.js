@@ -87,7 +87,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       a.tint = 0;
     
       this.sprite.visible = true;
-      this.colorHandler = new TweenColor(this.sprite, "hsl(0, 100%, 50%)");
+      this.colorHandler = new TweenColor(this.sprite, "hsl(60, 100%, 50%)");
     },
     
     tick: function() {
