@@ -23,24 +23,48 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       Archonia.Engine.game.input.onUp.add(Archonia.Engine.onMouseUp, Archonia.Engine);
       Archonia.Engine.game.input.onDown.add(Archonia.Engine.onMouseDown, Archonia.Engine);
       
-      Archonia.Essence.Logger.initialize(1000);
+      Archonia.Engine.letThereBeALoggingMechanism();
+      Archonia.Engine.letThereBeRanges();
+      Archonia.Engine.letThereBeBitmaps();
+      Archonia.Engine.letThereBeDaysAndSeasons();
+      Archonia.Engine.letThereBeLivingThings();
+    },
 
+    handleClick: function(/*pointer*/) {
+      
+    },
+    
+    letThereBeALoggingMechanism: function() { Archonia.Essence.Logger.initialize(1000); },
+    
+    letThereBeBitmaps: function() {
       Archonia.Cosmos.Sea = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSea');
       Archonia.Cosmos.Seasons = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSeasons');
       Archonia.Essence.Goo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaGoo');
       Archonia.Essence.SensorGoo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSensorGoo');
       Archonia.Essence.Dbitmap = Archonia.Essence.BitmapFactory.makeBitmap('debug');
-      
+    },
+    
+    letThereBeDaysAndSeasons: function() {
       Archonia.Cosmos.TheSun.ignite();
-      Archonia.Cosmos.TheVent.start();
-
+    },
+    
+    letThereBeLivingThings: function() {
       Archonia.Cosmos.FamilyTree = new Archonia.Cosmos.FamilyTree();
-      
+      Archonia.Cosmos.TheVent.start();
       Archonia.Cosmos.Archonery.start();
     },
-
-    handleClick: function(/*pointer*/) {
-      
+    
+    letThereBeRanges: function() {
+      Archonia.Essence.archonMassRange = new Archonia.Form.Range(0, 10);
+      Archonia.Essence.archonTolerableTempRange = new Archonia.Form.Range(200, 1000);
+      Archonia.Essence.archonSizeRange = new Archonia.Form.Range(0.07, 0.125);
+      Archonia.Essence.hueRange = new Archonia.Form.Range(240, 0);	// Blue (240) is cold/small range, Red (0) is hot/large range
+      Archonia.Essence.darknessRange = new Archonia.Form.Range(Archonia.Axioms.darknessAlphaHi, Archonia.Axioms.darknessAlphaLo);
+      Archonia.Essence.oneToZeroRange = new Archonia.Form.Range(1, 0);
+      Archonia.Essence.worldTemperatureRange = new Archonia.Form.Range(Archonia.Axioms.temperatureLo, Archonia.Axioms.temperatureHi);
+      Archonia.Essence.yAxisRange = new Archonia.Form.Range(Archonia.Axioms.gameHeight, 0);
+      Archonia.Essence.zeroToOneRange = new Archonia.Form.Range(0, 1);
+      Archonia.Essence.centeredZeroRange = new Archonia.Form.Range(-1, 1);
     },
     
     onMouseDown: function(/*pointer*/) {
