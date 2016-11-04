@@ -119,6 +119,10 @@ if(typeof window === "undefined") {
           Archonia.Cosmos.Year.seasonalSkyHue += 360 / Archonia.Axioms.daysPerYear;
           
           if(Archonia.Cosmos.Year.seasonalSkyHue > 360) { Archonia.Cosmos.Year.seasonalSkyHue = 0; }
+      
+          Archonia.Cosmos.Desert.tilePosition.setTo(
+            Archonia.Axioms.integerInRange(-1000, 0), Archonia.Axioms.integerInRange(-1000, 0)
+          );
         }
       });
     }

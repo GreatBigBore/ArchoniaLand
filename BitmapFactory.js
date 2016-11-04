@@ -71,18 +71,8 @@ if(typeof window === "undefined") {
     
     archoniaSea: function() {
       var bm = Archonia.Engine.game.add.bitmapData(Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight);
-      var cx = bm.context;
-
-      var g = cx.createLinearGradient(Archonia.Axioms.gameRadius, 0, Archonia.Axioms.gameRadius, Archonia.Axioms.gameHeight);
-
-      g.addColorStop(1.00, 'hsla(20, 40%, 65%, 1)');
-      g.addColorStop(0.00, 'hsla(20, 70%, 65%, 1)');
-
-      cx.fillStyle = g;
-      cx.fillRect(0, 0, Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight);
-
-      bm.update();
-      Archonia.Engine.game.add.image(-50, -1000, 'floor');
+      
+      bm.draw('floor', 0, 0, 1600, 1600);
     
       return new Archonia.Essence.Bitmap(bm);
     },
