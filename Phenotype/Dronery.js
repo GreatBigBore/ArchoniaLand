@@ -61,7 +61,7 @@ Drone.prototype = {
 
     var temp = null, clampedTemp = null;
     
-    temp = Archonia.Cosmos.Sun.getTemperature(this.state.position);
+    temp = Archonia.Cosmos.TheSun.getTemperature(this.state.position);
   	clampedTemp = Archonia.Axioms.clamp(temp, this.genome.optimalTempLo, this.genome.optimalTempHi);
 
   	var hue = Archonia.Essence.hueRange.convertPoint(clampedTemp, this.optimalTempRange);

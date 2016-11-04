@@ -30,17 +30,8 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       Archonia.Essence.Goo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaGoo');
       Archonia.Essence.SensorGoo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSensorGoo');
       Archonia.Essence.Dbitmap = Archonia.Essence.BitmapFactory.makeBitmap('debug');
-
-      Archonia.Cosmos.Desert = Archonia.Engine.game.add.tileSprite(
-        0, 0, Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight, 'floor'
-      );
-
-      Archonia.Cosmos.Desert.tilePosition.setTo(
-        Archonia.Axioms.integerInRange(-1000, 0), Archonia.Axioms.integerInRange(-1000, 0)
-      );
       
-      Archonia.Cosmos.Sun.ignite();
-      Archonia.Cosmos.Year.start();
+      Archonia.Cosmos.TheSun.ignite();
       Archonia.Cosmos.TheVent.start();
 
       Archonia.Cosmos.FamilyTree = new Archonia.Cosmos.FamilyTree();
@@ -85,9 +76,8 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
         Archonia.Essence.Dbitmap.bm.clear();
       
         Archonia.Cosmos.Archonery.tick();
-        Archonia.Cosmos.Year.tick();
         Archonia.Cosmos.TheVent.tick();
-      } catch(e) { debugger; }  // jshint ignore: line
+      } catch(e) { console.log(e.stack); debugger; }  // jshint ignore: line
     }
     
   };
