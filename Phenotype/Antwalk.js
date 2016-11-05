@@ -55,7 +55,7 @@ Antwalk.prototype = {
   },
   
   drawAntwalk: function(constraints) {
-    var drawDebugLines = false;
+    var drawDebugLines = true;
 
     if(drawDebugLines && !this.trail.isEmpty()) {
       this.trail.forEach(function(ix, value) {
@@ -63,7 +63,7 @@ Antwalk.prototype = {
       });
     }
 
-    var drawDirectionLine = false;
+    var drawDirectionLine = true;
 
     if(drawDirectionLine && !this.trail.isEmpty()) {
       var ix = this.trail.getIndexOfNewestElement();
@@ -152,6 +152,7 @@ Antwalk.prototype = {
         this.firstMoveAfterForagingRestart = false;
       }
 
+      Archonia.Essence.renderSchedule = [ ];
       this.launchToNextPosition(constraints);
       this.whenToIssueNextMove = this.state.frameCount + this.howManyTicksBetweenMoves;
     }

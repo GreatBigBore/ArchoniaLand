@@ -34,7 +34,10 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       
     },
     
-    letThereBeALoggingMechanism: function() { Archonia.Essence.Logger.initialize(1000); },
+    letThereBeALoggingMechanism: function() {
+      Archonia.Essence.Logger.initialize(1000);
+      Archonia.Essence.renderSchedule = [];
+    },
     
     letThereBeBitmaps: function() {
       Archonia.Cosmos.Sea = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSea');
@@ -83,6 +86,27 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
     
     render: function() {
+      for(var i = 0; i < Archonia.Essence.renderSchedule.length; i++) {
+        var c = Archonia.Engine.game.debug.context;
+        var s = Archonia.Essence.renderSchedule[i];
+        
+        switch(s.what) {
+        case "line":
+          c.strokeStyle = s.strokeStyle; c.lineWidth = s.lineWidth;
+          c.beginPath(); c.moveTo(s.from.x, s.from.y); c.lineTo(s.to.x, s.to.y); c.stroke();
+          break;
+
+        case "cSquare":
+          c.strokeStyle = s.strokeStyle; c.lineWidth = s.lineWidth;
+          c.beginPath(); c.rect(s.ul.x, s.ul.y, s.dimension, s.dimension); c.stroke();
+          break;
+
+        case "rectangle":
+          c.fillStyle = s.fillStyle;
+          c.fillRect(s.topLeft.x, s.topLeft.y, s.widthHeight.x, s.widthHeight.y);
+          break;
+        }
+      }
     },
     
     start: function() {

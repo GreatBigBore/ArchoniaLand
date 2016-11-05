@@ -23,25 +23,30 @@ if(typeof window === "undefined") {
     aLine: function(from, to, style, width) {
       if(style === undefined) { style = 'rgb(255, 255, 255)'; }
       if(width === undefined) { width = 1; }
+      
+      var p = {
+        what: "line", strokeStyle: style, lineWidth: width, from: Archonia.Form.XY(from), to: Archonia.Form.XY(to)
+      };
 
-      this.cx.strokeStyle = style;
-      this.cx.lineWidth = width;
-
-      this.cx.beginPath();
-      this.cx.moveTo(from.x, from.y);
-      this.cx.lineTo(to.x, to.y);
-      this.cx.stroke();
+      Archonia.Essence.renderSchedule.push(p);
     },
     
     cSquare: function(center, dimension, style, width) {
       var ul = center.minus(dimension / 2, dimension / 2);
       
-      this.cx.strokeStyle = style;
-      this.cx.lineWidth = width;
+      var p = {
+        what: "cSquare", strokeStyle: style, lineWidth: width, ul: Archonia.Form.XY(ul), dimension: dimension
+      };
 
-      this.cx.beginPath();
-      this.cx.rect(ul.x, ul.y, dimension, dimension);
-      this.cx.stroke();
+      Archonia.Essence.renderSchedule.push(p);
+    },
+    
+    rectangle: function(topLeft, widthHeight, style) {
+      var p = {
+        what: "rectangle", fillStyle: style, topLeft: Archonia.Form.XY(topLeft), widthHeight: Archonia.Form.XY(widthHeight)
+      };
+
+      Archonia.Essence.renderSchedule.push(p);
     },
   
     rLine: function(from, relativeTo, style, width) {
