@@ -62,6 +62,10 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       this.legs = new Archonia.Form.Legs(this); this.legs.launch(5, 1);
     },
     
+    getPollenLevel: function(where) {
+      return this.state.position.getDistanceTo(where);
+    },
+    
     phaserSetup: function() {
       Archonia.Essence.BitmapFactory.makeBitmap("archoniaVent");
     

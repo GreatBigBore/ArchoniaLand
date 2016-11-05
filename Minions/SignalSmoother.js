@@ -54,6 +54,10 @@ Archonia.Form.SignalSmoother.prototype = {
     this.empty = true;
   },
   
+  signalAvailable: function() {
+    return this.cbuffer.isFull();
+  },
+  
   store: function(value) {
     var s = null;
     

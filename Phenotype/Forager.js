@@ -13,7 +13,7 @@ var Forager = function(archon) {
   this.genome = Archonia.Cosmos.Genomery.makeGeneCluster(archon, "forager");
   this.state = archon.state;
   
-  this.antwalk = new Archonia.Form.Antwalk(archon);
+  this.gnatfly = new Archonia.Form.Gnatfly(archon);
   
   if(yAxisRange === null) {
     yAxisRange = new Archonia.Form.Range(
@@ -54,46 +54,11 @@ Forager.prototype = {
   launch: function() {
     this.currentMannaTarget = null;
     this.where = "random";
+    this.gnatfly.launch();
   },
   
   tick: function() {
-    var mannaInSight = this.state.sensedSkinnyManna.length > 0;
-    
-    if(mannaInSight) {
-      var ix = this.state.sensedSkinnyManna.findIndex(
-        function(m) { return m.archoniaUniqueObjectId === this.currentMannaTarget; }, this
-      );
-      
-      if(ix === -1) {
-        var archonMass = Archonia.Essence.getArchonMass(this.state);
-        var optimalTemp = this.genome.optimalTemp;
-        var p = this.state.position;
-        
-        this.state.sensedSkinnyManna.sort(function(a, b) {
-
-          var aTempCost = Archonia.Essence.getTempCost(a, archonMass, optimalTemp);
-          var bTempCost = Archonia.Essence.getTempCost(b, archonMass, optimalTemp);
-          
-          if(aTempCost === bTempCost) {
-            return p.getDistanceTo(a) < p.getDistanceTo(b);
-          } else {
-            return aTempCost < bTempCost;
-          }
-
-        });
-        
-        ix = 0;
-      }
-      
-      var bestManna = this.state.sensedSkinnyManna[ix];
-      this.currentMannaTarget = bestManna.archoniaUniqueObjectId;
-      this.state.targetPosition.set(bestManna, 0, 0);
-
-    }
-    
-    // We don't really have to tick antwalk every time, but it
-    // allows me to not have to maintain any state on his behalf
-    this.antwalk.tick(!mannaInSight, "random");
+    this.gnatfly.tick();
   }
 };
 

@@ -59,7 +59,11 @@ var primordialGenome = {
 
   hungerToleranceMultiplier:   new Archonia.Form.ScalarGene(0.75),
   hungerSignalBufferSize:      new Archonia.Form.ScalarGene(10),
-  hungerSignalDecayRate:       new Archonia.Form.ScalarGene(0.03)
+  hungerSignalDecayRate:       new Archonia.Form.ScalarGene(0.03),
+  
+  pollenToleranceMultiplier:   new Archonia.Form.ScalarGene(0.75),
+  pollenSignalBufferSize:      new Archonia.Form.ScalarGene(10),
+  pollenSignalDecayRate:       new Archonia.Form.ScalarGene(0.03)
 };
 
 var selectGenome = function(archonOrGenomeId) {

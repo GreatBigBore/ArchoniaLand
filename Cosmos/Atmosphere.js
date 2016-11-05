@@ -18,8 +18,8 @@ Atmosphere.prototype = {
     var desertColdspotTemp = -500;
     
     var hd = where.getDistanceTo(100, 100), cd = where.getDistanceTo(500, 500);
-    var hotspotContribution = hd === 0 ? 0 : desertHotspotTemp / hd;
-    var coldspotContribution = cd === 0 ? 0 : desertColdspotTemp / cd;
+    var hotspotContribution = desertHotspotTemp * (hd / 600);
+    var coldspotContribution = desertColdspotTemp * (cd / 600);
     
     return (sunEnergyLevel + hotspotContribution + coldspotContribution) / 3;
   }
