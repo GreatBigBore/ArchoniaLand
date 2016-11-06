@@ -55,7 +55,7 @@ Antwalk.prototype = {
   },
   
   drawAntwalk: function(constraints) {
-    var drawDebugLines = true;
+    var drawDebugLines = false;
 
     if(drawDebugLines && !this.trail.isEmpty()) {
       this.trail.forEach(function(ix, value) {
@@ -63,7 +63,7 @@ Antwalk.prototype = {
       });
     }
 
-    var drawDirectionLine = true;
+    var drawDirectionLine = false;
 
     if(drawDirectionLine && !this.trail.isEmpty()) {
       var ix = this.trail.getIndexOfNewestElement();
