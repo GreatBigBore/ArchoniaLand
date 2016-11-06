@@ -23,7 +23,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     s = Archonia.Axioms.integerInRange(0, r);
 
     for(i = 0; i < weights.length && s >= 0; i++) { s -= weights[i].weight; }
-
+    
     return weights[i - 1].ix;
   };
 
@@ -113,18 +113,40 @@ Gnatfly.prototype = {
     // and far more useful for choosing our general direction
     var multiplier = 1e6;
     
+    var tempSignals = [ ], pollenSignals = [ ], inBounds = [], tempOutOfRange = false;
+    
+    a = 0;
+    for(i = 0; i < 8; i++) {
+      c = this.tempSensors[i].getSignalStrength();
+
+      a += c;
+      tempSignals.push(c);
+
+      c = this.pollenSensors[i].getSignalStrength() * 0.75;
+      pollenSignals.push(c);
+    }
+    
+    if(a < 0.01 || a > 0.99) { tempOutOfRange = true; }
+    
     for(i = 0, q = 0; i < 8; i++) {
       p = relativePositions[i].plus(this.state.position);
       
       if(p.isInBounds()) {
+        inBounds.push(i);
+        
         this.tempSensors[i].store(Archonia.Cosmos.TheAtmosphere.getTemperature(p));
         this.pollenSensors[i].store(Archonia.Cosmos.TheVent.getPollenLevel(p));
         
         if(this.tempSensors[i].signalAvailable() && this.pollenSensors[i].signalAvailable()) {
-          var tempSignal = this.tempSensors[i].getSignalStrength();
-          var pollenSignal = this.pollenSensors[i].getSignalStrength() * 0.75;
-        
+          var tempSignal = tempSignals[i];
+          var pollenSignal = pollenSignals[i];
+          
+          if(tempOutOfRange) {
+            tempSignal = Archonia.Cosmos.TheAtmosphere.getTemperature(p) / Archonia.Axioms.temperatureRadius;
+          }
+
           tempSignal = 1 - Math.abs(tempSignal);
+
           if(pollenSignal > 0.5) { pollenSignal = 1 - pollenSignal; }
 
           c = (tempSignal + pollenSignal) / 2;
@@ -142,8 +164,13 @@ Gnatfly.prototype = {
       for(i = 0; i < senses.length; i++) { senses[i].weight -= m; a += senses[i].weight; }
     }
 
-    if(a === 0) { senses = []; for(i = 0; i < 8; i++) { senses.push({ weight: 1, ix: i }); } }
-    else { for(i = 0; i < senses.length; i++) { senses[i].weight = Math.floor(senses[i].weight / 1e4); } }
+    if(a === 0) {
+      // No signal; choose any random target as long as its in bounds
+      senses = [];
+      for(i = 0; i < inBounds.length; i++) {
+        senses.push({ weight: 1, ix: inBounds[i] });
+      }
+    } else { for(i = 0; i < senses.length; i++) { senses[i].weight = Math.floor(senses[i].weight / 1e4); } }
 
     return senses;
   },
