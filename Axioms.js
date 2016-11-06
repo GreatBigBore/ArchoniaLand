@@ -37,6 +37,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
   Archonia.Axioms.howManyPointsForNonSpatialInputs = 1;
   Archonia.Axioms.howManyPointsForSpatialInputs = 12;
   Archonia.Axioms.howManyPointsForTemperatureInputs = 2;
+  Archonia.Axioms.gameHypoteneuse = Math.sqrt(2 * Math.pow(Archonia.Axioms.gameWidth, 2));
   Archonia.Axioms.larvalFatDensity = 1000;
   Archonia.Axioms.mannaPoolSize = 500;
   Archonia.Axioms.maxAcceleration = 15;
