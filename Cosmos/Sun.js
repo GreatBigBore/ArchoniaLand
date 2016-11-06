@@ -88,6 +88,9 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     this.desert = Archonia.Engine.game.add.tileSprite(
       0, 0, Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight, 'floor'
     );
+    
+    this.coldShelter = Archonia.Engine.game.add.sprite(100, 100, 'shelter'); this.coldShelter.anchor.setTo(0.5, 0.5);
+    this.warmShelter = Archonia.Engine.game.add.sprite(500, 500, 'shelter'); this.warmShelter.anchor.setTo(0.5, 0.5);
 
     // Note: add day/season sprites AFTER the desert, so
     // they'll come out on top in the z-order
