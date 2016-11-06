@@ -122,6 +122,7 @@ Archonia.Form.ColorGene.prototype.getColorAsDecimal = function() { return parseI
 Archonia.Form.ColorGene.prototype.getTempRadius = function() { return this.getTempRange() / 2; };
 Archonia.Form.ColorGene.prototype.getOptimalTempHi = function() { return this.getOptimalTemp() + this.getTempRange() / 2; };
 Archonia.Form.ColorGene.prototype.getOptimalTempLo = function() { return this.getOptimalTemp() - this.getTempRange() / 2; };
+Archonia.Form.ColorGene.prototype.getHslString = function() { return this.color.toHslString(); };
 
 Archonia.Form.ColorGene.prototype.getOptimalTemp = function() {
   var L = this.color.toHsl().l;

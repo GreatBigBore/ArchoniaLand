@@ -49,6 +49,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
   Archonia.Axioms.standardSensorScale = 0.2;
   Archonia.Axioms.temperatureHi = 1000;
   Archonia.Axioms.temperatureLo = -1000;
+  Archonia.Axioms.temperatureRadius = (Archonia.Axioms.temperatureHi - Archonia.Axioms.temperatureLo) / 2;
   
   Archonia.Axioms.clamp = function(value, min, max) {
     value = Math.max(value, min); value = Math.min(value, max); return value;

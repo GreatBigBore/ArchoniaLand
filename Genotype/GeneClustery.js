@@ -30,6 +30,7 @@ var geneClustery = {
     
     switch(whichGene) {
       case "color":         return genome.color.getColorAsDecimal();
+      case "hslString":     return genome.color.getHslString();
       case "optimalTempHi": return genome.color.getOptimalTempHi();
       case "optimalTempLo": return genome.color.getOptimalTempLo();
       case "optimalTemp":   return genome.color.getOptimalTemp();

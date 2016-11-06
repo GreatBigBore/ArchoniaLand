@@ -38,6 +38,7 @@ var primordialGenome = {
   predatorFearRatio:           new Archonia.Form.ScalarGene(1.5),
 
   // dummy entries so the getters will work
+  hslString: null,
   optimalTemp: null,
   optimalTempHi: null,
   optimalTempLo: null,

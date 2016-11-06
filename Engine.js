@@ -60,7 +60,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     
     letThereBeRanges: function() {
       Archonia.Essence.archonMassRange = new Archonia.Form.Range(0, 10);
-      Archonia.Essence.archonTolerableTempRange = new Archonia.Form.Range(200, 1000);
+      Archonia.Essence.archonTolerableTempRange = new Archonia.Form.Range(50, 200);
       Archonia.Essence.archonSizeRange = new Archonia.Form.Range(0.07, 0.125);
       Archonia.Essence.hueRange = new Archonia.Form.Range(240, 0);	// Blue (240) is cold/small range, Red (0) is hot/large range
       Archonia.Essence.darknessRange = new Archonia.Form.Range(Archonia.Axioms.darknessAlphaHi, Archonia.Axioms.darknessAlphaLo);
