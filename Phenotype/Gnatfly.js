@@ -7,6 +7,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
 
 (function(Archonia) {
 
+  var overrideSignalBufferSize = 30;
   var howManyTicksBetweenMoves_ = 60;
   var squareSize = 30;
   var relativePositions = [
@@ -15,9 +16,24 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     Archonia.Form.XY(-squareSize, 0), Archonia.Form.XY(-squareSize, -squareSize)
   ];
   
+  var allEqual = function(values) {
+    if(values.length > 0) {
+      var first = values[0].weight;
+      return values.findIndex(function(e) { return e.weight !== first; }) === -1;
+    } else { debugger; }  // jshint ignore: line
+  };
+  
+  var allNonNullsEqual = function(values) {
+    if(values.length > 0) {
+      var first = values.find(function(e) { return e.weight !== null; });
+      if(first === undefined) { return true; }
+      else { return values.findIndex(function(e) { return e.weight !== first.weight && e.weight !== null; }) === -1; }
+    } else { debugger; }  // jshint ignore: line
+  };
+  
   var getMovement = function(weights) {
     var i = null, r = 0, s = null;
-
+    
     for(i = 0, r = 0; i < weights.length; i++) { r += weights[i].weight; }
     
     s = Archonia.Axioms.integerInRange(0, r);
@@ -26,6 +42,64 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     
     return weights[i - 1].ix;
   };
+  
+  var liftAndSeparate = function(values) {
+    // Which would mean that both the signal array and the temp
+    // array are useless, probably both all zeros, which should
+    // never happen
+    if(allEqual(values)) { debugger; }  // jshint ignore: line
+        
+    var i = null, m = null, max = null, min = null, multiplier = null;
+    
+    if(!allNonNullsEqual(values)) {
+      min = null;
+      for(i = 0; i < values.length; i++) {
+        if(values[i].weight !== null) { m = values[i].weight; if(min === null || (m > 0 && m < min)) { min = m; } }
+      }
+  
+      // We should be able to count on the array not being all zeros,
+      // as we checked for that at the beginning of this function.
+      // Note that we're checking for < 1e-6, rather than < 0, because
+      // sometimes we get rounding errors. Not a big deal to throw out
+      // such large numbers, I hope
+      for(i = 0; i < values.length; i++) {
+        if(values[i].weight !== null) { values[i].weight -= min; if(values[i].weight < 1e-6) { values[i].weight = 0; } }
+      }
+
+      min = null; max = null;
+      for(i = 0; i < values.length; i++) {
+        if(values[i].weight !== null) {
+          m = values[i].weight;
+          if(min === null || (m > 0 && m < min)) { min = m; }
+          if(max === null || (m > 0 && m > max)) { max = m; }
+        }
+      }
+  
+      // Should never happen -- if we subtract and get all zeros, it
+      // would mean all the original values in the array were the
+      // same, which we checked for at the beginning
+      if(min === null) { debugger; }  // jshint ignore: line
+      if(max === null) { debugger; }  // jshint ignore: line
+
+      if(max === 0) {
+        // All of the non-null entries had the same value at this point
+        // they're all zero; make them equally likely to be chosen
+        for(i = 0; i < values.length; i++) {
+          if(values[i].weight !== null) { values[i].weight = 1; }
+        }
+      } else {
+        // We have signal differences we can work with
+        multiplier = 10 / max;        // This will make max exactly 10 times min
+        for(i = 0; i < values.length; i++) {
+          if(values[i].weight !== null) { values[i].weight *= multiplier; }
+        }
+      }
+    }
+
+    // Just to make it a clearly separate step; chop off the decimals
+    for(i = 0; i < values.length; i++) { if(values[i].weight !== null) { values[i].weight = Math.ceil(values[i].weight); } }
+  };
+    
 
 var Gnatfly = function(archon, howManyTicksBetweenMoves) {
   if(howManyTicksBetweenMoves === undefined) { howManyTicksBetweenMoves = howManyTicksBetweenMoves_; }
@@ -78,7 +152,7 @@ Gnatfly.prototype = {
 
     this.tempSensors = [];
     for(i = 0; i < 8; i++) {
-      this.tempSensors.push(new Archonia.Form.SignalSmoother(8, this.genome.tempSignalDecayRate, lo, hi));
+      this.tempSensors.push(new Archonia.Form.SignalSmoother(overrideSignalBufferSize, this.genome.tempSignalDecayRate, lo, hi));
     }
 
     lo = this.genome.reproductionThreshold - this.genome.birthMassAdultCalories; hi = 0;
@@ -98,85 +172,74 @@ Gnatfly.prototype = {
   },
   
   sense: function() {
-    var a = null, c = null, i = null, m = Number.MAX_VALUE, p = null, q = null, senses = [ ];
-    
-    // We make the numbers big so we can later subtract some
-    // fixed value from them and cause them to be proportionally
-    // further apart. For example, if we get a bunch of signals like
-    // .0251 .0252 .0249 .0253 .0250 .0270
-    // They're proportionally really close together, so we end up
-    // wandering aimlessly. So we multiply them hugely,
-    // get some averages, then subtract the lowest value from all
-    // of them, like this: 25100, 25200, 24900, 25300, 25000, 27000, then
-    // (25100 - 24900), (25200 - 24900), etc., ending up with
-    // 200, 300, 0, 400, 100, 2100 -- proportionally much further apart,
-    // and far more useful for choosing our general direction
-    var multiplier = 1e6;
-    
-    var tempSignals = [ ], pollenSignals = [ ], inBounds = [], tempOutOfRange = false;
-    
-    a = 0;
-    for(i = 0; i < 8; i++) {
-      c = this.tempSensors[i].getSignalStrength();
+    var tempDeltas = [], temps = [ ], rawSenses = [ ], oneAdjusted = [ ], nullified = [ ],
+        max = null, maxIx = null, m = null, n = null, s = null;
 
-      a += c;
-      tempSignals.push(c);
-
-      c = this.pollenSensors[i].getSignalStrength() * 0.75;
-      pollenSignals.push(c);
-    }
-    
-    if(a < 0.01 || a > 0.99) { tempOutOfRange = true; }
-    
-    for(i = 0, q = 0; i < 8; i++) {
-      p = relativePositions[i].plus(this.state.position);
+    for(var i = 0; i < 8; i++) {
+      var p = relativePositions[i].plus(this.state.position);
+      if(p.isInBounds()) {
+        var t = Archonia.Cosmos.TheAtmosphere.getTemperature(p);
+        this.tempSensors[i].store(t);
+        temps.push({ weight: t.toFixed(4), ix: i });
+        tempDeltas.push({ weight: Math.abs(this.genome.optimalTemp - t), ix: i });
+      } else {
+        this.tempSensors[i].store(null);
+        temps.push({ weight: null, ix: i });
+        tempDeltas.push({ weight: null, ix: i });
+      }
       
       if(p.isInBounds()) {
-        inBounds.push(i);
-        
-        this.tempSensors[i].store(Archonia.Cosmos.TheAtmosphere.getTemperature(p));
-        this.pollenSensors[i].store(Archonia.Cosmos.TheVent.getPollenLevel(p));
-        
-        if(this.tempSensors[i].signalAvailable() && this.pollenSensors[i].signalAvailable()) {
-          var tempSignal = tempSignals[i];
-          var pollenSignal = pollenSignals[i];
-          
-          if(tempOutOfRange) {
-            tempSignal = Archonia.Cosmos.TheAtmosphere.getTemperature(p) / Archonia.Axioms.temperatureRadius;
-          }
-
-          tempSignal = 1 - Math.abs(tempSignal);
-
-          if(pollenSignal > 0.5) { pollenSignal = 1 - pollenSignal; }
-
-          c = (tempSignal + pollenSignal) / 2;
-
-          if(c * multiplier < m) { m = Math.floor(c * multiplier); }
-          senses.push({ weight: Math.floor(c * multiplier), ix: i });
-        }
+        s = this.tempSensors[i].getSignalStrength();
+        rawSenses.push({ weight: s, ix: i });
+        oneAdjusted.push({ weight: (1 - Math.abs(s)).toFixed(4), ix: i });
       } else {
-        this.tempSensors[i].reset(); this.pollenSensors[i].reset();
+        rawSenses.push({ weight: null, ix: i });
+        oneAdjusted.push({ weight: null, ix: i });
       }
+      
+      n = this.tempSensors[i].signalAvailable() && p.isInBounds() ? (1 - Math.abs(s)).toFixed(4) : null;
+      nullified.push({ weight: n, ix: i });
+      
+      if(max === null || n > max) { max = n; maxIx = i; }
     }
     
-    a = 0;
-    if(this.state.frameCount > 60 * 5) {
-      for(i = 0; i < senses.length; i++) { senses[i].weight -= m; a += senses[i].weight; }
+    // Get the max delta
+    max = null; maxIx = null;
+    for(i = 0; i < 8; i++) {
+      n = tempDeltas[i].weight;
+      if(n !== null) { if(max === null || tempDeltas[i].weight > max) { max = tempDeltas[i].weight; maxIx = i; } }
     }
+    
+    // Now use that element's actual value to adjust the other elements
+    n = tempDeltas[maxIx].weight;
+    for(i = 0; i < 8; i++) { m = tempDeltas[i].weight; if(m !== null) { tempDeltas[i].weight = n - tempDeltas[i].weight; } }
 
-    if(a === 0) {
-      // No signal; choose any random target as long as its in bounds
-      senses = [];
-      for(i = 0; i < inBounds.length; i++) {
-        senses.push({ weight: 1, ix: inBounds[i] });
+    if(true || allEqual(nullified) || allNonNullsEqual(nullified)) {
+      liftAndSeparate(tempDeltas);
+      
+      max = null;
+      for(i = 0; i < 8; i++) {
+        n = tempDeltas[i].weight;
+        if(n !== null) { if(max === null || n > max) { max = n; maxIx = i; } }
       }
-    } else { for(i = 0; i < senses.length; i++) { senses[i].weight = Math.floor(senses[i].weight / 1e4); } }
+      
+      return tempDeltas;
+    } else {
+      liftAndSeparate(nullified);
 
-    return senses;
+      max = null;
+      for(i = 0; i < 8; i++) {
+        n = nullified[i].weight;
+        if(n !== null) { if(max === null || n > max) { max = n; maxIx = i; } }
+      }
+      
+      return nullified;
+    }
+    
+    return rawSenses;
   },
   
   tick: function() {
-    
     if(this.state.firstTickAfterLaunch) {
       this.whenToIssueNextMove = 0;
     }

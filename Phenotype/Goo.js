@@ -95,6 +95,7 @@ Archonia.Form.Goo.prototype = {
   die: function() { Archonia.Cosmos.Archonery.acceptSoul(this.state.archonUniqueId); },
 
   eat: function(food) {
+    food.calories = 0;
     if(this.state.encysted) { return; }  // You don't gain anything while encysted
     
     var benefit = 0;
@@ -188,7 +189,7 @@ Archonia.Form.Goo.prototype = {
   tick: function(frameCount) {
     this.frameCount = frameCount;
     
-    this.metabolize();
+    //this.metabolize();
   }
 };
   

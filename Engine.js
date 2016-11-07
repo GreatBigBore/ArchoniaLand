@@ -31,7 +31,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
 
     handleClick: function(/*pointer*/) {
-      
+      Archonia.Cosmos.barf = true;
     },
     
     letThereBeALoggingMechanism: function() {

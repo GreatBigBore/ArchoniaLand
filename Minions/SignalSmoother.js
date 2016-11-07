@@ -55,10 +55,13 @@ Archonia.Form.SignalSmoother.prototype = {
   },
   
   signalAvailable: function() {
-    return this.cbuffer.isFull();
+    return !this.cbuffer.isEmpty();
   },
   
   store: function(value) {
+    // Allow caller to specify that there is no input signal
+    if(value === null) { return; }
+
     var s = null;
     
     s = this.storedValuesRange.convertPoint(value, this.inputValuesRange);
