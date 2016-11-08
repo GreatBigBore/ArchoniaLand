@@ -50,21 +50,22 @@ var primordialGenome = {
   reproductionThreshold:       new Archonia.Form.ScalarGene(500),
   embryoThreshold:             new Archonia.Form.ScalarGene(200),
 
-  tempToleranceMultiplier:     new Archonia.Form.ScalarGene(1),
   tempThresholdEncyst:         new Archonia.Form.ScalarGene(0.85),
   tempThresholdUnencyst:       new Archonia.Form.ScalarGene(0.50),
   tempThresholdVerticalOnly:   new Archonia.Form.ScalarGene(0.80),
   tempThresholdHorizontalOk:   new Archonia.Form.ScalarGene(0.75),
-  tempSignalBufferSize:        new Archonia.Form.ScalarGene(10),
-  tempSignalDecayRate:         new Archonia.Form.ScalarGene(0.03),
 
-  hungerToleranceMultiplier:   new Archonia.Form.ScalarGene(0.75),
-  hungerSignalBufferSize:      new Archonia.Form.ScalarGene(10),
-  hungerSignalDecayRate:       new Archonia.Form.ScalarGene(0.03),
+  tempToleranceMultiplier:     new Archonia.Form.ScalarGene(1),
+  tempSignalBufferSize:        new Archonia.Form.ScalarGene(10),
+  tempSignalDecayRate:         new Archonia.Form.ScalarGene(0.02),
   
-  pollenToleranceMultiplier:   new Archonia.Form.ScalarGene(0.75),
-  pollenSignalBufferSize:      new Archonia.Form.ScalarGene(10),
-  pollenSignalDecayRate:       new Archonia.Form.ScalarGene(0.03)
+  pollenToleranceMultiplier:   new Archonia.Form.ScalarGene(1),
+  pollenSignalBufferSize:      new Archonia.Form.ScalarGene(20),
+  pollenSignalDecayRate:       new Archonia.Form.ScalarGene(0.02),
+
+  hungerToleranceMultiplier:   new Archonia.Form.ScalarGene(1),
+  hungerSignalBufferSize:      new Archonia.Form.ScalarGene(20),
+  hungerSignalDecayRate:       new Archonia.Form.ScalarGene(0.02)
 };
 
 var selectGenome = function(archonOrGenomeId) {
