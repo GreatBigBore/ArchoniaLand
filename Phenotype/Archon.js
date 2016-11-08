@@ -19,7 +19,6 @@ var Archon = function() {
   this.state.position = new Archonia.Form.Archonoid(this.drone.sensor.body.center);
   this.state.velocity = new Archonia.Form.Archonoid(this.drone.sensor.body.velocity);
 
-  this.senses = new Archonia.Form.Senses(this);
   this.goo = new Archonia.Form.Goo(this);
   this.legs = new Archonia.Form.Legs(this);
   this.forager = new Archonia.Form.Forager(this);
@@ -48,7 +47,6 @@ Archon.prototype = {
 
     Archonia.Cosmos.Genomery.inherit(this, myParentArchon);
 
-    this.senses.launch();
     this.forager.launch();
     this.legs.launch(this.genome.maxMVelocity, this.genome.maxMAcceleration);
     this.goo.launch();
@@ -119,7 +117,6 @@ Archon.prototype = {
     
     this.state.touchedVent = false; // Sensor will turn this back on if still touching
 
-    this.senses.tick();
     this.forager.tick();
     this.goo.tick();
     this.legs.tick();
