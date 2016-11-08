@@ -59,13 +59,15 @@ Archonia.Form.SignalSmoother.prototype = {
   },
   
   store: function(value) {
-    // Allow caller to specify that there is no input signal
-    if(value === null) { return; }
-
     var s = null;
     
-    s = this.storedValuesRange.convertPoint(value, this.inputValuesRange);
-    s = Archonia.Axioms.clamp(s, this.storedValuesRange.lo, this.storedValuesRange.hi);
+    if(value === null) {
+      // Allow caller to specify that there is no input signal
+      s = 0;
+    } else {
+      s = this.storedValuesRange.convertPoint(value, this.inputValuesRange);
+      s = Archonia.Axioms.clamp(s, this.storedValuesRange.lo, this.storedValuesRange.hi);
+    }
   
     this.cbuffer.store(s);
 
