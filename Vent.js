@@ -63,7 +63,13 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
     
     getPollenLevel: function(where) {
-      return this.state.position.getDistanceTo(where);
+      // Pollen level is the inverse of the distance, so
+      // the closer you are to the source, the higher the level
+      var p = this.state.position.getDistanceTo(where);
+      var q = Archonia.Axioms.gameHypoteneuse - p;
+      var r = Archonia.Essence.zeroToOneRange.convertPoint(q, Archonia.Essence.gameDistanceRange);
+      
+      return r;
     },
     
     phaserSetup: function() {

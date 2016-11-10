@@ -69,6 +69,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       Archonia.Essence.yAxisRange = new Archonia.Form.Range(Archonia.Axioms.gameHeight, 0);
       Archonia.Essence.zeroToOneRange = new Archonia.Form.Range(0, 1);
       Archonia.Essence.centeredZeroRange = new Archonia.Form.Range(-1, 1);
+      Archonia.Essence.gameDistanceRange = new Archonia.Form.Range(0, Archonia.Axioms.gameHypoteneuse);
     },
     
     onMouseDown: function(/*pointer*/) {

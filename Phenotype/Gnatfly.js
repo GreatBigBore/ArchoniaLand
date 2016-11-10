@@ -9,12 +9,6 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
 
   var overrideSignalBufferSize = 30;
   var howManyTicksBetweenMoves_ = 60;
-  var squareSize = 30;
-  var relativePositions = [
-    Archonia.Form.XY(0, -squareSize), Archonia.Form.XY(squareSize, -squareSize), Archonia.Form.XY(squareSize, 0),
-    Archonia.Form.XY(squareSize, squareSize), Archonia.Form.XY(0, squareSize), Archonia.Form.XY(-squareSize, squareSize),
-    Archonia.Form.XY(-squareSize, 0), Archonia.Form.XY(-squareSize, -squareSize)
-  ];
   
 var Gnatfly = function(archon, howManyTicksBetweenMoves) {
   if(howManyTicksBetweenMoves === undefined) { howManyTicksBetweenMoves = howManyTicksBetweenMoves_; }
@@ -24,37 +18,68 @@ var Gnatfly = function(archon, howManyTicksBetweenMoves) {
   this.howManyTicksBetweenMoves = howManyTicksBetweenMoves;
   
   this.lastPosition = Archonia.Form.XY();
+  this.grid = new Archonia.Form.Grid(this.state.position);
 };
 
 Gnatfly.prototype = {
-  getDampedMovement: function() {
-    var w = this.dampedSenseArray.getCurveWeight();
+  chooseTargetPosition: function(signalCurve) {
+    var w = this.grid.getCurveWeight(signalCurve);
     var r = Archonia.Axioms.integerInRange(0, w);
-    var s = this.dampedSenseArray.weightedSelect(r);
+    var s = this.weightedSelect(signalCurve, r);
     
     return s;
   },
   
-  getRawMovement: function() {
-    var w = this.rawSenseArray.getCurveWeight();
-    var r = Archonia.Axioms.integerInRange(0, w);
-    var s = this.rawSenseArray.weightedSelect(r);
+  weightedSelect: function(signalCurve, randomValue) {
+    var c = null, d = null, f = null, i = null;
+
+    f = signalCurve.find(function(e) { return e !== null && e > 0; });
+
+    if(f === undefined) {
+      // If all we have are nulls and zeros, put 1s wherever
+      // we have zeros, to make all of them equally likely and
+      // so we won't just go through the zeros and always pick 7
+      for(i = 0; i < signalCurve.length; i++) { if(signalCurve[i] === 0) { signalCurve[i] = 1; } }
+    }
     
-    return s;
+    // Now check whether we're in danger of going out of bounds
+    for(i = 0, c = 0; i < signalCurve.length; i++) { if(signalCurve[i] !== null) { c++; } }
+
+    if(c <= 3) {
+      // We're too close to a boundary; choose the direction that
+      // gets us back in bounds. Easy enough: set everything else
+      // to zero and return the ix of the one that had the highest
+      // signal
+      for(i = 0, c = null; i < signalCurve.length; i++) {
+        if(signalCurve[i] !== null) {
+          if(c === null || signalCurve[i] > c) { c = signalCurve[i]; d = i; }
+        }
+      }
+      
+      for(i = 0; i < signalCurve.length; i++) { signalCurve[i] = 0; }
+
+      signalCurve[d] = 1; // No randomness; take this one
+      return d;
+      
+    } else {
+    
+      for(i = 0; i < signalCurve.length && randomValue >= 0; i++) {
+        randomValue -= signalCurve[i];
+      }
+
+      return i - 1;
+    }
   },
   
-  launchToNextPosition: function() {
-    var where = null;
-    
-    this.rawSenseArray.setMark();
-    where = this.getRawMovement();
+  launchToNextPosition: function(signalCurve) {
+    var where = this.chooseTargetPosition(signalCurve);
 
     var r = Archonia.Form.XY(), s = Archonia.Form.XY();
-    r.set(relativePositions[where].plus(this.state.position));
+    r.set(Archonia.Essence.gridPositions[where].plus(this.state.position));
     s.set(r);
     
     // Just so they don't go around in straight lines all the time
-    r = s.randomizedTo(squareSize * 2); if(!s.isInBounds()) { r.set(s); }
+    r = s.randomizedTo(Archonia.Essence.gridletSize); if(!s.isInBounds()) { r.set(s); }
     this.state.targetPosition.set(r);
     this.lastPosition.set(this.state.position);
   },
@@ -82,41 +107,7 @@ Gnatfly.prototype = {
         Math.floor(this.genome.pollenSignalBufferSize), this.genome.pollenSignalDecayRate, lo, hi));
     }
     
-    this.rawSenseArray = new Archonia.Form.SenseArray(8);
-    this.dampedSenseArray = new Archonia.Form.SenseArray(8);
-    
     this.lastPosition.set(this.state.position);
-  },
-  
-  sense: function() {
-    var n = null, s = null, t = null, u = null;
-
-    for(var i = 0; i < 8; i++) {
-      var p = relativePositions[i].plus(this.state.position);
-
-      n = null; // What we'll store in damped if out of bounds or no signal
-      u = null; // What we'll store in raw if out of bounds
-
-      if(p.isInBounds()) {
-        t = Archonia.Cosmos.TheAtmosphere.getTemperature(p);
-        u = Math.abs(this.genome.optimalTemp - t);
-        
-        this.tempSensors[i].store(t);
-        
-        if(this.tempSensors[i].signalAvailable()) {
-          s = this.tempSensors[i].getSignalStrength();
-          n = 1 - Math.abs(s);
-        }
-
-      } else {
-        
-        this.tempSensors[i].store(null);
-
-      }
-
-      this.dampedSenseArray.store(n);
-      this.rawSenseArray.store(u);
-    }
   },
   
   tick: function() {
@@ -125,8 +116,8 @@ Gnatfly.prototype = {
     }
 
     if(this.state.frameCount > this.whenToIssueNextMove) {
-      var senses = this.sense();
-      this.launchToNextPosition(senses);
+      var signalCurve = this.grid.getSignalCurve();
+      this.launchToNextPosition(signalCurve);
       this.whenToIssueNextMove = this.state.frameCount + this.howManyTicksBetweenMoves;
     }
   }
