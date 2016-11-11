@@ -59,26 +59,11 @@ Grid.prototype = {
   },
   
   getSignalCurve: function() {
-  
-    var signalIsFlat = function(curve) {
-      var first = curve.find(function(e) { return e !== null; });
-    
-      // Didn't find any non-null value; that counts as flat
-      if(first === undefined) { return true; }
-    
-      // Found non-null; it's flat iff all the non-null values are the same
-      else { var f = curve.findIndex(function(e) { return e !== first && e !== null; }) === -1; return f;}
-    };
-
     var t = { s: this.getSignalCurveTemp(), g: this.genome.tempToleranceMultiplier };
-    var ps = t.s.slice(0);  // jshint ignore: line
     var p = { s: this.getSignalCurvePollen(), g: this.genome.pollenToleranceMultiplier };
-    var pc = p.s.slice(0);  // jshint ignore: line
     var c = this.combineCurves([ t, p ]);
-    var pd = c.slice(0);  // jshint ignore: line
-    var d = Archonia.Essence.normalizeCurve(c);
-    var f = d.slice(0); // jshint ignore: line
-    if(signalIsFlat(f)) { debugger; } // jshint ignore: line
+    var b = this.stayInBounds(c);
+    var d = Archonia.Essence.normalizeCurve(b);
     
     return d;
   },
@@ -107,6 +92,27 @@ Grid.prototype = {
     }
     
     return a;
+  },
+  
+  stayInBounds: function(curve) {
+    var isAllNull = curve.find(function(e) { return e !== null; }) === undefined;
+    
+    if(isAllNull) {
+      var closestToCenter = null, i = null, ix = null;
+      for(i = 0; i < gridPositions.length; i++) {
+        var d = this.gridlets[i].getDistance(this.position,
+          Archonia.Engine.game.world.centerX, Archonia.Engine.game.world.centerY
+        );
+        
+        if(closestToCenter === null || d < closestToCenter) { closestToCenter = d; ix = i; }
+      }
+      
+      console.log("centering", this.position.toString());
+      
+      curve[ix] = 1;  // All nulls; set this so we'll aim for world center
+    }
+    
+    return curve;
   }
 };
 
@@ -119,6 +125,10 @@ Gridlet.prototype = {
     var p = this.aPosition(center);
     
     return p.isInBounds() ? Archonia.Cosmos.TheVent.getPollenLevel(p) : null;
+  },
+  
+  getDistance: function(center, x, y) {
+    return this.aPosition(center).getDistanceTo(x, y);
   },
   
   getSignalTemp: function(center) {

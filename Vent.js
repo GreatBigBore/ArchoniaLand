@@ -9,7 +9,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
 
 (function(Archonia) {
   
-  var pollenThreshold = 500;
+  var pollenThreshold = 3000;
 
   var TweenColor = function(sprite, hsl) {
     this.sprite = sprite;
@@ -133,7 +133,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
     
     tick: function() {
-      this.state.nectarReserves += (40 * Archonia.Axioms.archonCount) / 600;
+      this.state.nectarReserves += (25 * Archonia.Axioms.archonCount) / 600;
       if(this.state.nectarReserves > pollenThreshold) {
         this.state.producingPollen = true;
       }

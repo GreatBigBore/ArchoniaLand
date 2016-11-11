@@ -21,29 +21,12 @@ var Gnatfly = function(archon, howManyTicksBetweenMoves) {
   this.grid = new Archonia.Form.Grid(archon);
 };
 
-var signalIsFlat = function(curve) {
-  var first = curve.find(function(e) { return e !== null; });
-  
-  // Didn't find any non-null value; that counts as flat
-  if(first === undefined) { return true; }
-  
-  // Found non-null; it's flat iff all the non-null values are the same
-  else { var f = curve.findIndex(function(e) { return e !== first && e !== null; }) === -1; return f;}
-};
-
 Gnatfly.prototype = {
   chooseTargetPosition: function(signalCurve) {
-    var pw = signalCurve.slice(0);  // jshint ignore: line
     var w = this.grid.getCurveWeight(signalCurve);
-    var pr = signalCurve.slice(0);  // jshint ignore: line
     var r = Archonia.Axioms.integerInRange(0, w);
-    var ps = signalCurve.slice(0);  // jshint ignore: line
     var s = this.weightedSelect(signalCurve, r);
-    var f = signalCurve.slice(0); // jshint ignore: line
-    
-    if(signalIsFlat(signalCurve)) { debugger; } // jshint ignore: line
-    
-    if(isNaN(s) || (s < 0 || s > 7)) { debugger; }  // jshint ignore: line
+
     return s;
   },
   
