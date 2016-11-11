@@ -40,8 +40,8 @@ Drone.prototype = {
     this.avatar.reset(0, 0, 100);
     this.button.reset(0, 0, 100);
 
-    var avatarScale = Archonia.Axioms.avatarRadius * 2 / (sensorScale * 100);
-    var buttonScale = avatarScale / 3;
+    var avatarScale = 0.02;
+    var buttonScale = avatarScale * 5;
 
     this.sensor.scale.setTo(sensorScale, sensorScale);
     this.sensor.anchor.setTo(0.5, 0.5);
@@ -154,16 +154,22 @@ var handleOverlaps = function() {
 
 var setupSpritePools = function() {
 	var setupPool = function(whichPool) {
-    var bmData = (whichPool === "sensors") ? "archoniaSensorGoo" : "archoniaGoo";
+    var image = null;
+    
+    switch(whichPool) {
+      case "sensors": image = Archonia.Engine.game.cache.getBitmapData("archoniaSensorGoo"); break;
+      case "buttons": image = Archonia.Engine.game.cache.getBitmapData("archoniaGoo"); break;
+      case "avatars": image = 'flare'; break;
+    }
 
 		spritePools[whichPool] = Archonia.Engine.game.add.group();
 	  spritePools[whichPool].createMultiple(
-      Archonia.Axioms.archonPoolSize, Archonia.Engine.game.cache.getBitmapData(bmData), 0, false
+      Archonia.Axioms.archonPoolSize, image, 0, false
     );
 	};
 
 	setupPool('sensors');
-	setupPool('avatars');
+	setupPool('avatars', 'flare');
 	setupPool('buttons');
 
   Archonia.Engine.game.physics.enable(spritePools.sensors, Phaser.Physics.ARCADE);

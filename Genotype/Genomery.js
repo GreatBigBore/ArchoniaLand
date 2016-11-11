@@ -59,7 +59,7 @@ var primordialGenome = {
   tempSignalBufferSize:        new Archonia.Form.ScalarGene(10),
   tempSignalDecayRate:         new Archonia.Form.ScalarGene(0.02),
   
-  pollenToleranceMultiplier:   new Archonia.Form.ScalarGene(1),
+  pollenToleranceMultiplier:   new Archonia.Form.ScalarGene(2),
   pollenSignalBufferSize:      new Archonia.Form.ScalarGene(20),
   pollenSignalDecayRate:       new Archonia.Form.ScalarGene(0.02),
 

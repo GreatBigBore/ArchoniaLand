@@ -17,11 +17,12 @@ var gridPositions = [
   XY(-gridletSize, 0), XY(-gridletSize, -gridletSize)
 ];
   
-var Grid = function(archonPosition) {
+var Grid = function(archon) {
   this.gridlets = [ ];
   for(var i = 0; i < 8; i++) { this.gridlets.push(new Gridlet(gridPositions[i])); }
   
-  this.position = archonPosition;
+  this.position = archon.state.position;
+  this.genome = archon.genome;
 };
 
 Grid.prototype = {
@@ -29,14 +30,19 @@ Grid.prototype = {
     var combined = new Array(gridPositions.length); combined.fill(-1);
     
     for(var i = 0; i < curves.length; i++) {
-      var currentCurve = curves[i];
+      var currentCurve = curves[i].s;
+      var currentMultiplier = curves[i].g;
       
       for(var j = 0; j < gridPositions.length; j++) {
         var input = currentCurve[j];
 
         if(input === null) { combined[j] = null; }
-        else if(combined[j] === -1) { combined[j] = input; }
-        else { combined[j] += input; }
+        else {
+          input *= currentMultiplier;
+          
+          if(combined[j] === -1) { combined[j] = input; }
+          else { combined[j] += input; }
+        }
       }
     }
     
@@ -53,10 +59,26 @@ Grid.prototype = {
   },
   
   getSignalCurve: function() {
-    var t = this.getSignalCurveTemp();
-    var p = this.getSignalCurvePollen();
+  
+    var signalIsFlat = function(curve) {
+      var first = curve.find(function(e) { return e !== null; });
+    
+      // Didn't find any non-null value; that counts as flat
+      if(first === undefined) { return true; }
+    
+      // Found non-null; it's flat iff all the non-null values are the same
+      else { var f = curve.findIndex(function(e) { return e !== first && e !== null; }) === -1; return f;}
+    };
+
+    var t = { s: this.getSignalCurveTemp(), g: this.genome.tempToleranceMultiplier };
+    var ps = t.s.slice(0);  // jshint ignore: line
+    var p = { s: this.getSignalCurvePollen(), g: this.genome.pollenToleranceMultiplier };
+    var pc = p.s.slice(0);  // jshint ignore: line
     var c = this.combineCurves([ t, p ]);
+    var pd = c.slice(0);  // jshint ignore: line
     var d = Archonia.Essence.normalizeCurve(c);
+    var f = d.slice(0); // jshint ignore: line
+    if(signalIsFlat(f)) { debugger; } // jshint ignore: line
     
     return d;
   },

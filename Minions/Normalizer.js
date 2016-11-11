@@ -77,9 +77,14 @@ var normalizeCurve = function(curve) {
     else { var f = curve.findIndex(function(e) { return e !== first && e !== null; }) === -1; return f;}
   };
   
+  var pc = curve.slice(0); // jshint ignore: line
   chop(curve);
+  var ps = curve.slice(0); // jshint ignore: line
   scale(curve);
+  var po = curve.slice(0); // jshint ignore: line
   contrastify(curve);
+  var f = curve.slice(0); // jshint ignore: line
+  if(signalIsFlat(curve)) { debugger; } // jshint ignore: line
   
   return curve;
 };

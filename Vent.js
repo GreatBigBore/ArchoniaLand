@@ -8,16 +8,20 @@
 var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Form: {} };
 
 (function(Archonia) {
+  
+  var pollenThreshold = 500;
 
   var TweenColor = function(sprite, hsl) {
     this.sprite = sprite;
     this.tinycolor = null;
+    this.hueTween = null;
+    this.targetH = 60;
   
     this.h = 0;
     this.s = 0;
     this.L = 0;
   
-    this.start(hsl);
+    this.startLumaPulse(hsl);
   };
 
   TweenColor.prototype = {
@@ -25,8 +29,22 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       this.hslString = "hsl(" + this.h + ", " + Math.floor(this.s) + "%, " + Math.floor(this.L) + "%)";
       return parseInt(tinycolor(this.hslString).toHex(), 16);
     },
+    
+    setHue: function(hueValue) {
+      if(this.targetH !== hueValue) {
+        this.targetH = hueValue;
+        
+        if(this.hueTween !== null) { this.hueTween.stop(); }
+      
+        this.hueTween = Archonia.Engine.game.add.tween(this).to(
+          { h: hueValue }, 2 * 1000, Phaser.Easing.Sinusoidal.In, true, 0, 1, false
+        );
   
-    start: function(hslString) {
+        this.hueTween.onComplete.add(function(tween, colorHandler) { colorHandler.hueTween = null; });
+      }
+    },
+  
+    startLumaPulse: function(hslString) {
       var hsl = tinycolor(hslString).toHsl();
       this.h = hsl.h; this.s = hsl.s * 100; this.L = hsl.l * 100;
     
@@ -49,7 +67,9 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       archonUniqueId: "Vent",
       firstTickAfterLaunch: true,
       frameCount: 0,
+      nectarReserves: 500,  // Calories
       position: null,
+      producingPollen: false,
       targetPosition: new Archonia.Form.TargetPosition(),
       velocity: null,
       whenToRespin: 0
@@ -63,13 +83,25 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
     
     getPollenLevel: function(where) {
-      // Pollen level is the inverse of the distance, so
-      // the closer you are to the source, the higher the level
-      var p = this.state.position.getDistanceTo(where);
-      var q = Archonia.Axioms.gameHypoteneuse - p;
-      var r = Archonia.Essence.zeroToOneRange.convertPoint(q, Archonia.Essence.gameDistanceRange);
+      if(this.state.producingPollen) {
+        // Pollen level is the inverse of the distance, so
+        // the closer you are to the source, the higher the level
+        var p = this.state.position.getDistanceTo(where);
+        var q = Archonia.Axioms.gameHypoteneuse - p;
+        var r = Archonia.Essence.zeroToOneRange.convertPoint(q, Archonia.Essence.gameDistanceRange);
       
-      return r;
+        return r;
+      } else { return 0; }
+    },
+    
+    giveNectar: function() {
+      var calories = 50 / 60; // 50 cal per second
+      if(this.state.nectarReserves - calories < 0) {
+        if(this.state.producingPollen) {
+          this.colorHandler.setHue(0); this.state.producingPollen = false; return 0;
+        }
+      }
+      else { this.state.nectarReserves -= calories; return calories; }
     },
     
     phaserSetup: function() {
@@ -101,6 +133,16 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
     
     tick: function() {
+      this.state.nectarReserves += (40 * Archonia.Axioms.archonCount) / 600;
+      if(this.state.nectarReserves > pollenThreshold) {
+        this.state.producingPollen = true;
+      }
+      
+      if(this.state.producingPollen) {
+        if(this.state.nectarReserves > pollenThreshold * 1.5) { this.colorHandler.setHue(100); }
+        else if(this.state.nectarReserves > pollenThreshold) { this.colorHandler.setHue(60); }
+      }
+      
       if(this.state.frameCount > this.state.whenToRespin) {
         
         if(this.sprite.body.angularVelocity === 0) {

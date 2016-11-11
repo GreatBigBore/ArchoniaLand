@@ -95,7 +95,6 @@ Archonia.Form.Goo.prototype = {
   die: function() { Archonia.Cosmos.Archonery.acceptSoul(this.state.archonUniqueId); },
 
   eat: function(food) {
-    food.calories = 0;
     if(this.state.encysted) { return; }  // You don't gain anything while encysted
     
     var benefit = 0;
@@ -150,7 +149,7 @@ Archonia.Form.Goo.prototype = {
   getSensorCost: function() { return 15 * this.genome.sensorScale / Archonia.Axioms.standardSensorScale; },
 
   getTempCost: function() {
-    Archonia.Essence.getTempCost(this.state.position, this.getMass(), this.genome.optimalTemp, this.genome.tempRange);
+    return Archonia.Essence.getTempCost(this.state.position, this.getMass(), this.genome.optimalTemp, this.genome.tempRange);
   },
   
   howHungryAmI: function() {
@@ -189,7 +188,7 @@ Archonia.Form.Goo.prototype = {
   tick: function(frameCount) {
     this.frameCount = frameCount;
     
-    //this.metabolize();
+    this.metabolize();
   }
 };
   
