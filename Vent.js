@@ -110,11 +110,11 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     phaserSetup: function() {
       Archonia.Essence.BitmapFactory.makeBitmap("archoniaVent");
     
-      var a = Archonia.Engine.game.add.sprite(0, 0, 'vent'/*Archonia.Engine.game.cache.getBitmapData('archoniaVent'*/);
+      var a = Archonia.Engine.game.add.sprite(0, 0, 'vent');
 
       var x = Archonia.Axioms.integerInRange(Archonia.Axioms.goddamnedLeft, Archonia.Axioms.goddamnedRight);
       var y = Archonia.Axioms.integerInRange(Archonia.Axioms.goddamnedTop, Archonia.Axioms.goddamnedBottom);
-      this.sprite = Archonia.Engine.game.add.sprite(x, y, Archonia.Engine.game.cache.getBitmapData('archoniaGoo'));
+      this.sprite = Archonia.Engine.game.add.sprite(x, y, Archonia.Engine.game.cache.getBitmapData('archoniaGooVent'));
     
       this.sprite.addChild(a);
     
@@ -122,9 +122,9 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
 
       a.anchor.setTo(0.5, 0.5);
       a.scale.setTo(1, 1);
-      a.scale.setTo(0.6, 0.6);
+      a.scale.setTo(0.3, 0.3);
     
-      this.sprite.scale.setTo(0.4, 0.4);
+      this.sprite.scale.setTo(1, 1);
       this.sprite.anchor.setTo(0.5, 0.5);
       this.sprite.alpha = 1;
       this.sprite.body.angularVelocity = 1;
@@ -137,7 +137,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     
     tick: function() {
       this.state.nectarReserves++;
-      this.state.nectarReserves *= 1 + (0.02 / 60);
+      this.state.nectarReserves *= 1 + (0.05 / 60);
       if(this.state.nectarReserves > pollenThreshold) {
         this.state.producingPollen = true;
       }

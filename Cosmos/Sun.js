@@ -52,11 +52,11 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
   };
   
   var Day = function(noonBells, theSun) {
-    this.darkness = Archonia.Engine.game.add.sprite(
-      Archonia.Essence.gameCenter.x, Archonia.Essence.gameCenter.y, Archonia.Engine.game.cache.getBitmapData('archoniaGoo')
-    );
+    var x = Archonia.Essence.gameCenter.x, y = Archonia.Essence.gameCenter.y;
+    var b = Archonia.Engine.game.cache.getBitmapData('archoniaGooArchonia');
+    this.darkness = Archonia.Engine.game.add.sprite(x, y, b);
 
-    var scale = Archonia.Axioms.gameWidth / Archonia.Axioms.archoniaGooRadius;
+    var scale = Archonia.Axioms.gameWidth / Archonia.Axioms.gooRadiusArchonia;
     this.darkness.scale.setTo(scale, scale); // Big enough to cover the world
 
     this.darkness.anchor.setTo(0.5, 0.5);
@@ -88,9 +88,9 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     this.desert = Archonia.Engine.game.add.tileSprite(
       0, 0, Archonia.Axioms.gameWidth, Archonia.Axioms.gameHeight, 'floor'
     );
-    
-    this.coldShelter = Archonia.Engine.game.add.sprite(100, 100, 'shelter'); this.coldShelter.anchor.setTo(0.5, 0.5);
-    this.warmShelter = Archonia.Engine.game.add.sprite(500, 500, 'shelter'); this.warmShelter.anchor.setTo(0.5, 0.5);
+
+    this.coldShelter = Archonia.Engine.game.add.sprite(50, 50, 'shelter'); this.coldShelter.anchor.setTo(0.5, 0.5);
+    this.warmShelter = Archonia.Engine.game.add.sprite(550, 550, 'shelter'); this.warmShelter.anchor.setTo(0.5, 0.5);
 
     // Note: add day/season sprites AFTER the desert, so
     // they'll come out on top in the z-order

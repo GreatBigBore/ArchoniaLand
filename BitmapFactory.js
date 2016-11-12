@@ -94,39 +94,63 @@ if(typeof window === "undefined") {
       return new Archonia.Essence.Bitmap(bm);
     },
   
-    archoniaGoo: function() {
-      var bm = Archonia.Engine.game.add.bitmapData(Archonia.Axioms.archoniaGooDiameter, Archonia.Axioms.archoniaGooDiameter);
+    archoniaGooArchonia: function() {
+      var d = Archonia.Axioms.gooDiameterArchonia;
+      var r = Archonia.Axioms.gooRadiusArchonia;
+      
+      var bm = Archonia.Engine.game.add.bitmapData(d, d);
       var cx = bm.context;
 
       cx.beginPath();
-
-      bm.circle(
-        Archonia.Axioms.archoniaGooRadius, Archonia.Axioms.archoniaGooRadius,
-        Archonia.Axioms.archoniaGooRadius, 'rgba(255, 255, 255, 1)'
-      );
-
+      bm.circle(r, r, r, 'rgba(255, 255, 255, 1)');
       cx.fill();
       
-      Archonia.Engine.game.cache.addBitmapData('archoniaGoo', bm);
-    
+      Archonia.Engine.game.cache.addBitmapData('archoniaGooArchonia', bm);
+      return new Archonia.Essence.Bitmap(bm);
+    },
+
+    archoniaGooVent: function() {
+      var d = Archonia.Axioms.gooDiameterVent;
+      var r = Archonia.Axioms.gooRadiusVent;
+      
+      var bm = Archonia.Engine.game.add.bitmapData(d, d);
+      var cx = bm.context;
+
+      cx.beginPath();
+      bm.circle(r, r, r, 'rgba(255, 255, 255, 1)');
+      cx.fill();
+      
+      Archonia.Engine.game.cache.addBitmapData('archoniaGooVent', bm);
+      return new Archonia.Essence.Bitmap(bm);
+    },
+
+    archoniaGooButton: function() {
+      var d = Archonia.Axioms.gooDiameterButton;
+      var r = Archonia.Axioms.gooRadiusButton;
+      
+      var bm = Archonia.Engine.game.add.bitmapData(d, d);
+      var cx = bm.context;
+
+      cx.beginPath();
+      bm.circle(r, r, r, 'rgba(255, 255, 255, 1)');
+      cx.fill();
+      
+      Archonia.Engine.game.cache.addBitmapData('archoniaGooButton', bm);
       return new Archonia.Essence.Bitmap(bm);
     },
   
-    archoniaSensorGoo: function() {
-      var bm = Archonia.Engine.game.add.bitmapData(Archonia.Axioms.archoniaGooDiameter, Archonia.Axioms.archoniaGooDiameter);
+    archoniaGooSensor: function() {
+      var d = Archonia.Axioms.gooDiameterSensor;
+      var r = Archonia.Axioms.gooRadiusSensor;
+
+      var bm = Archonia.Engine.game.add.bitmapData(d, d);
       var cx = bm.context;
 
       cx.beginPath();
-
-      bm.circle(
-        Archonia.Axioms.archoniaGooRadius, Archonia.Axioms.archoniaGooRadius,
-        Archonia.Axioms.archoniaGooRadius, 'hsla(240, 100%, 50%, 0.01)'
-      );
-
+      bm.circle(r, r, r, 'hsla(240, 100%, 50%, 0.01)');
       cx.fill();
 
-      Archonia.Engine.game.cache.addBitmapData('archoniaSensorGoo', bm);
-    
+      Archonia.Engine.game.cache.addBitmapData('archoniaGooSensor', bm);
       return new Archonia.Essence.Bitmap(bm);
     },
   

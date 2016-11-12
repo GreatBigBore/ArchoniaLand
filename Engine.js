@@ -42,8 +42,10 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     letThereBeBitmaps: function() {
       Archonia.Cosmos.Sea = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSea');
       Archonia.Cosmos.Seasons = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSeasons');
-      Archonia.Essence.Goo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaGoo');
-      Archonia.Essence.SensorGoo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaSensorGoo');
+      Archonia.Essence.Goo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaGooArchonia');
+      Archonia.Essence.SensorGoo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaGooButton');
+      Archonia.Essence.SensorGoo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaGooSensor');
+      Archonia.Essence.SensorGoo = Archonia.Essence.BitmapFactory.makeBitmap('archoniaGooVent');
       Archonia.Essence.Dbitmap = Archonia.Essence.BitmapFactory.makeBitmap('debug');
     },
     

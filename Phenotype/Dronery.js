@@ -28,6 +28,7 @@ Drone.prototype = {
   decohere: function() { this.sensor.kill(); this.avatar.kill(); this.button.kill(); },
   
   launch: function(archonUniqueId, sensorScale, x, y) {
+    console.log("There are " + Archonia.Cosmos.Dronery.countDrones() + " fireflies alive");
     this.sensor.archonUniqueId = archonUniqueId;
     
     this.optimalTempRange.set(this.genome.optimalTempLo, this.genome.optimalTempHi);
@@ -40,7 +41,7 @@ Drone.prototype = {
     this.avatar.reset(0, 0, 100);
     this.button.reset(0, 0, 100);
 
-    var avatarScale = 0.02;
+    var avatarScale = 0.05;
     var buttonScale = avatarScale * 5;
 
     this.sensor.scale.setTo(sensorScale, sensorScale);
@@ -157,9 +158,9 @@ var setupSpritePools = function() {
     var image = null;
     
     switch(whichPool) {
-      case "sensors": image = Archonia.Engine.game.cache.getBitmapData("archoniaSensorGoo"); break;
-      case "buttons": image = Archonia.Engine.game.cache.getBitmapData("archoniaGoo"); break;
-      case "avatars": image = 'flare'; break;
+      case "sensors": image = Archonia.Engine.game.cache.getBitmapData("archoniaGooSensor"); break;
+      case "buttons": image = Archonia.Engine.game.cache.getBitmapData("archoniaGooButton"); break;
+      case "avatars": image = Archonia.Engine.game.cache.getBitmapData("archoniaGooButton"); break;
     }
 
 		spritePools[whichPool] = Archonia.Engine.game.add.group();
@@ -176,6 +177,7 @@ var setupSpritePools = function() {
 };
 
 Archonia.Cosmos.Dronery = {
+  countDrones: function() { return spritePools.sensors.countLiving(); },
   getDrone: function(archon) { var dronoid = getDronoid(); return new Drone(archon, dronoid); },
   start: function() { setupSpritePools(); constructDronoids(); },
   tick: function() { handleOverlaps(); }
