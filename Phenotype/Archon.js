@@ -69,7 +69,10 @@ Archon.prototype = {
       Archonia.Cosmos.FamilyTree.addMe(this.state.archonUniqueId, myParentArchon.state.archonUniqueId);
     }
 
-    this.drone.launch(this.state.archonUniqueId, this.genome.sensorScale, x, y);
+    // This used to come from the genome, but for now, it's only for fireflies,
+    // and I want them to stay small
+    var sensorScale = 1;
+    this.drone.launch(this.state.archonUniqueId, sensorScale, x, y);
   },
   
   senseVent: function() {
