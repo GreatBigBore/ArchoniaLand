@@ -59,7 +59,7 @@ Antwalk.prototype = {
 
     if(drawDebugLines && !this.trail.isEmpty()) {
       this.trail.forEach(function(ix, value) {
-        Archonia.Essence.Dbitmap.cSquare(value, squareSize, "yellow", 2);
+        Archonia.Engine.Dbitmap.cSquare(value, squareSize, "yellow", 2);
       });
     }
 
@@ -75,8 +75,8 @@ Antwalk.prototype = {
         case "randomDownOnly": color = "red"; break;
       }
       
-      Archonia.Essence.Dbitmap.aLine(this.state.position, p, color, 2);
-      Archonia.Essence.Dbitmap.aLine(this.state.position, this.debugRandomTarget, "black", 1);
+      Archonia.Engine.Dbitmap.aLine(this.state.position, p, color, 2);
+      Archonia.Engine.Dbitmap.aLine(this.state.position, this.debugRandomTarget, "black", 1);
     }
   },
   

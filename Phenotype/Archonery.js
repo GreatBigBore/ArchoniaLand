@@ -68,14 +68,14 @@ Archonia.Cosmos.Archonery = {
   start: function() {
     Archonia.Cosmos.momentOfCreation = true;
 
-    Archonia.Cosmos.Dronery.start();
+    Archonia.Engine.Dronery.start();
     for(var i = 0; i < Archonia.Axioms.archonCount; i++) { breed(); }
 
     Archonia.Cosmos.momentOfCreation = false;
   },
   
   tick: function() {
-    Archonia.Cosmos.Dronery.tick();
+    Archonia.Engine.Dronery.tick();
     for(var i = 0; i < archonPool.length; i++) { if(archonPool[i].hasLaunched) { archonPool[i].tick(); } }
   }
 };

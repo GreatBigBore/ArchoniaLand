@@ -14,7 +14,7 @@ var Archon = function() {
 
   Archonia.Cosmos.Genomery.genomifyMe(this); // No inheritance here; just getting a skeleton genome
   
-  this.drone = Archonia.Cosmos.Dronery.getDrone(this);
+  this.drone = Archonia.Engine.Dronery.getDrone(this);
 
   this.state.position = new Archonia.Form.Archonoid(this.drone.sensor.body.center);
   this.state.velocity = new Archonia.Form.Archonoid(this.drone.sensor.body.velocity);

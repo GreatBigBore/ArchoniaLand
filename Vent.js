@@ -108,7 +108,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
     
     phaserSetup: function() {
-      Archonia.Essence.BitmapFactory.makeBitmap("archoniaVent");
+      Archonia.Engine.TheBitmapFactory.makeBitmap("archoniaVent");
     
       var a = Archonia.Engine.game.add.sprite(0, 0, 'vent');
 

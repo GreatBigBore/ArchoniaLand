@@ -28,7 +28,7 @@ Drone.prototype = {
   decohere: function() { this.sensor.kill(); this.avatar.kill(); this.button.kill(); },
   
   launch: function(archonUniqueId, sensorScale, x, y) {
-    console.log("There are " + Archonia.Cosmos.Dronery.countDrones() + " fireflies alive");
+    console.log("There are " + Archonia.Engine.Dronery.countDrones() + " fireflies alive");
     this.sensor.archonUniqueId = archonUniqueId;
     
     this.optimalTempRange.set(this.genome.optimalTempLo, this.genome.optimalTempHi);
@@ -172,7 +172,7 @@ var setupSpritePools = function() {
   Archonia.Engine.game.physics.enable(spritePools.sensors, Phaser.Physics.ARCADE);
 };
 
-Archonia.Cosmos.Dronery = {
+Archonia.Engine.Dronery = {
   countDrones: function() { return spritePools.sensors.countLiving(); },
   getDrone: function(archon) { var dronoid = getDronoid(); return new Drone(archon, dronoid); },
   start: function() { setupSpritePools(); constructDronoids(); },
@@ -182,5 +182,5 @@ Archonia.Cosmos.Dronery = {
 })(Archonia);
 
 if(typeof window === "undefined") {
-  module.exports = Archonia.Cosmos.Dronery;
+  module.exports = Archonia.Engine.Dronery;
 }
