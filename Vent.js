@@ -124,7 +124,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       a.scale.setTo(1, 1);
       a.scale.setTo(0.3, 0.3);
     
-      this.sprite.scale.setTo(1, 1);
+      this.sprite.scale.setTo(0.75, 0.75);
       this.sprite.anchor.setTo(0.5, 0.5);
       this.sprite.alpha = 1;
       this.sprite.body.angularVelocity = 1;
