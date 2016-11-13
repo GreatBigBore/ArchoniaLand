@@ -104,7 +104,7 @@ Archon.prototype = {
   tick: function() {
     this.state.frameCount++;
     
-    if(this.state.touchingVent) {
+    if(this.state.position.getDistanceTo(Archonia.Cosmos.TheVent.state.position) < 50) {
       var calories = Archonia.Cosmos.TheVent.giveNectar();
       this.goo.eat({calories: calories});
     }

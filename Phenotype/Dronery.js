@@ -134,6 +134,8 @@ var constructDronoids = function() {
     s.addChild(a); s.addChild(b);
     s.avatar = a; s.button = b;
 
+    s.visible = false;
+    a.visble = false;
     s.inputEnabled = true;
     s.input.enableDrag();
     s.events.onDragStart.add(function(s) { var a = getArchonById(s.archonUniqueId); a.toggleMotion(); } );
@@ -145,12 +147,6 @@ var getArchonById = function(id) { return Archonia.Cosmos.Archonery.getArchonByI
 var getDronoid = function() {
   var d = spritePools.sensors.getFirstDead();
   if(d === null) { throw new Error("No more dronoids in pool"); } else { return d; }
-};
-
-var handleOverlaps = function() {
-  Archonia.Engine.game.physics.arcade.overlap(
-    spritePools.sensors, Archonia.Cosmos.TheVent.sprite, Archonia.Cosmos.Archonery.senseVent
-  );
 };
 
 var setupSpritePools = function() {
@@ -180,7 +176,7 @@ Archonia.Cosmos.Dronery = {
   countDrones: function() { return spritePools.sensors.countLiving(); },
   getDrone: function(archon) { var dronoid = getDronoid(); return new Drone(archon, dronoid); },
   start: function() { setupSpritePools(); constructDronoids(); },
-  tick: function() { handleOverlaps(); }
+  tick: function() { }
 };
 
 })(Archonia);
