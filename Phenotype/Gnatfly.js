@@ -7,8 +7,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
 
 (function(Archonia) {
 
-  var overrideSignalBufferSize = 30;
-  var howManyTicksBetweenMoves_ = 60;
+var howManyTicksBetweenMoves_ = 60;
   
 var Gnatfly = function(archon, howManyTicksBetweenMoves) {
   if(howManyTicksBetweenMoves === undefined) { howManyTicksBetweenMoves = howManyTicksBetweenMoves_; }
@@ -87,28 +86,6 @@ Gnatfly.prototype = {
   },
   
   launch: function() {
-    var i = null, lo = null, hi = null;
-  
-    lo = this.genome.optimalTempLo - this.genome.tempRadius; hi = this.genome.optimalTempHi + this.genome.tempRadius;
-
-    this.tempSensors = [];
-    for(i = 0; i < 8; i++) {
-      this.tempSensors.push(new Archonia.Form.SignalSmoother(overrideSignalBufferSize, this.genome.tempSignalDecayRate, lo, hi));
-    }
-
-    lo = this.genome.reproductionThreshold - this.genome.birthMassAdultCalories; hi = 0;
-  
-    this.state.hungerSensor = new Archonia.Form.SignalSmoother(
-      Math.floor(this.genome.hungerSignalBufferSize), this.genome.hungerSignalDecayRate, lo, hi
-    );
-  
-    lo = 0; hi = Archonia.gameWidth;
-    this.pollenSensors = [];
-    for(i = 0; i < 8; i++) {
-      this.pollenSensors.push(new Archonia.Form.SignalSmoother(
-        Math.floor(this.genome.pollenSignalBufferSize), this.genome.pollenSignalDecayRate, lo, hi));
-    }
-    
     this.lastPosition.set(this.state.position);
   },
   

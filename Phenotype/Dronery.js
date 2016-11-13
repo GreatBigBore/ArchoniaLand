@@ -11,7 +11,7 @@ var tinycolor = tinycolor || {};
 (function(Archonia) {
   
 var Drone = function(archon, dronoid) {
-  this.genome = Archonia.Cosmos.Genomery.makeGeneCluster(archon, "drone");
+  this.genome = archon.genome;
 
   this.state = archon.state;
   this.sensor = dronoid;

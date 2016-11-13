@@ -10,7 +10,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
   var yAxisRange = null;
 
 var Forager = function(archon) {
-  this.genome = Archonia.Cosmos.Genomery.makeGeneCluster(archon, "forager");
+  this.genome = archon.genome;
   this.state = archon.state;
   
   this.gnatfly = new Archonia.Form.Gnatfly(archon);

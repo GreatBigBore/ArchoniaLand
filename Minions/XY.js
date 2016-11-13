@@ -97,7 +97,9 @@ Archonia.Form.XY.prototype = {
   Y: function(places) { if(places === undefined) { places = 0; } return this.y.toFixed(places); },
 
   set: function(sourceOrMaybeX, maybeY) {
-    if(sourceOrMaybeX === undefined) {
+    if(sourceOrMaybeX instanceof Archonia.Form.XY) {
+      this.x = sourceOrMaybeX.x; this.y = sourceOrMaybeX.y;
+    } else if(sourceOrMaybeX === undefined) {
       this.x = 0; this.y = 0;
     } else {
       if(sourceOrMaybeX.x === undefined) {

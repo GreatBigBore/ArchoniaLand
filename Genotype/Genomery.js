@@ -6,22 +6,7 @@
 var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Form: {} };
 var tinycolor = tinycolor || {};
 
-if(typeof window === "undefined") {
-  Archonia.Axioms = require('../Axioms.js');
-  Archonia.Essence = require('../Essence.js');
-  
-  var genes = require('./Gene.js');
-  Archonia.Form.Gene = genes.Gene;
-  Archonia.Form.ScalarGene = genes.ScalarGene;
-  Archonia.Form.ColorGene = genes.ColorGene;
-  
-  Archonia.Cosmos.GeneClustery = require('./GeneClustery.js');
-  tinycolor = require('../TinyColor/tinycolor.js');
-}
-
 (function(Archonia) {
-  
-var genomePool = [];
 
 var primordialGenome = {
   color:                     new Archonia.Form.ColorGene(tinycolor('hsl(180, 100%, 50%)')),
@@ -37,7 +22,7 @@ var primordialGenome = {
   predationRatio:              new Archonia.Form.ScalarGene(1.5),
   predatorFearRatio:           new Archonia.Form.ScalarGene(1.5),
 
-  // dummy entries so the getters will work
+  // dummy entries, all relating to color; getters take care of these 
   hslString: null,
   optimalTemp: null,
   optimalTempHi: null,
@@ -68,32 +53,62 @@ var primordialGenome = {
   hungerSignalDecayRate:       new Archonia.Form.ScalarGene(0.02)
 };
 
-var selectGenome = function(archonOrGenomeId) {
-  if(archonOrGenomeId === undefined) { return primordialGenome; }
-  else if(archonOrGenomeId instanceof Archonia.Form.Archon) { return genomePool[archonOrGenomeId.genomeId]; }
-  else { return genomePool[archonOrGenomeId]; }
+var Genome = function(genomeCore) {
+  this.genomeCore = genomeCore;
 };
 
-Archonia.Cosmos.Genomery = {
+var colorGeneNames = [
+  "hslString", "optimalTemp", "optimalTempHi", "optimalTempLo", "tempRange", "tempRadius"
+];
+
+var Genomery = function() {
+  Object.defineProperty(Genome.prototype, "hslString", {
+    get: function() { return this.genomeCore.color.getHslString(); }
+  });
+
+  Object.defineProperty(Genome.prototype, "optimalTemp", {
+    get: function() { return this.genomeCore.color.getOptimalTemp(); }
+  });
+
+  Object.defineProperty(Genome.prototype, "optimalTempHi", {
+    get: function() { return this.genomeCore.color.getOptimalTempHi(); }
+  });
+
+  Object.defineProperty(Genome.prototype, "optimalTempLo", {
+    get: function() { return this.genomeCore.color.getOptimalTempLo(); }
+  });
+
+  Object.defineProperty(Genome.prototype, "tempRange", {
+    get: function() { return this.genomeCore.color.getTempRange(); }
+  });
+
+  Object.defineProperty(Genome.prototype, "tempRadius", {
+    get: function() { return this.genomeCore.color.getTempRadius(); }
+  });
+
+  for(var geneName in primordialGenome) {
+    if(colorGeneNames.indexOf(geneName) === -1) {
+      (function(geneName) {
+        Object.defineProperty(Genome.prototype, geneName, {
+          get: function() {
+            return this.genomeCore[geneName].value; }
+        });
+      })(geneName);
+    }
+  }
+};
+
+Genomery.prototype = {
   
   genomifyMe: function(archon) {
-    var newGenome = { };
+    var genomeCore = { };
 
-    for(var i in primordialGenome) {
-      if(primordialGenome[i] === null) { newGenome[i] = null; }
-      else { newGenome[i] = primordialGenome[i].newGene(); }
+    for(var geneName in primordialGenome) {
+      if(primordialGenome[geneName] === null) { genomeCore[geneName] = null; }
+      else { genomeCore[geneName] = primordialGenome[geneName].newGene(); }
     }
     
-    // This genome and this archon will forever be linked, both
-    // to be reset and re-launched with each precious cycle of life
-    archon.genomeId = genomePool.length;
-    genomePool.push(newGenome);
-    archon.genome = Archonia.Cosmos.GeneClustery.makeGeneCluster(newGenome, "archon");
-  },
-  
-  makeGeneCluster: function(archonOrGenomeId, clusterName) {
-    var genome = selectGenome(archonOrGenomeId);
-    return Archonia.Cosmos.GeneClustery.makeGeneCluster(genome, clusterName);
+    archon.genome = new Genome(genomeCore);
   },
   
   inherit: function(childArchon, parentArchon) {
@@ -104,13 +119,11 @@ Archonia.Cosmos.Genomery = {
     // weird, and it doesn't waste anything; we're not creating new
     // genes, we're just updating the existing ones, using the
     // primordial as our starting point
-    var parentGenome = selectGenome(parentArchon);
-    var childGenome = selectGenome(childArchon);
+    var parentGenome = parentArchon === undefined ? primordialGenome : parentArchon.genome.genomeCore;
+    var childGenome = childArchon.genome.genomeCore;
 
     for(var i in parentGenome) {
-      if(parentGenome[i] === null) { childGenome[i] = null; }
-      
-      else {
+      if(parentGenome[i] !== null) {
         try { childGenome[i].inherit(parentGenome[i]); }
         catch(e) {
           if(e.message === "Scalar gene value < 0") {
@@ -123,11 +136,9 @@ Archonia.Cosmos.Genomery = {
         }
       }
     }
-  },
+  }
 };
 
-})(Archonia);
+Archonia.Cosmos.Genomery = { start: function() { Archonia.Cosmos.Genomery = new Genomery(); } };
 
-if(typeof window === "undefined") {
-  module.exports = Archonia.Cosmos.Genomery;
-}
+})(Archonia);
