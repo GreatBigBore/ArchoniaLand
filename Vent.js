@@ -1,8 +1,6 @@
 /* jshint forin:false, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, loopfunc:true,
 	undef:true, unused:true, curly:true, browser:true, indent:false, maxerr:50, jquery:true, node:true */
 
-/* global Phaser, tinycolor */
-
 "use strict";
 
 var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Form: {} };
@@ -10,55 +8,6 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
 (function(Archonia) {
   
   var pollenThreshold = 3000;
-
-  var TweenColor = function(sprite) {
-    this.sprite = sprite;
-    this.tinycolor = null;
-    this.hueTween = null;
-    this.targetHue = 60;
-    this.hueQueue = [ ];
-  
-    this.h = this.targetHue;
-    this.s = 100;
-    this.L = 50;
-  
-    this.startLumaPulse();
-  };
-
-  TweenColor.prototype = {
-    getColor: function() {
-      this.hslString = "hsl(" + Math.floor(this.h) + ", " + Math.floor(this.s) + "%, " + Math.floor(this.L) + "%)";
-      return parseInt(tinycolor(this.hslString).toHex(), 16);
-    },
-    
-    setHue_: function() {
-      if(this.hueTween === null && this.hueQueue.length > 0) {
-        this.targetHue = this.hueQueue.shift();
-        
-        this.hueTween = Archonia.Engine.game.add.tween(this).to(
-          { h: this.targetHue }, 2 * 1000, Phaser.Easing.Sinusoidal.In, true, 0, 0, false
-        );
-  
-        this.hueTween.onComplete.add(function(colorHandler) {
-          colorHandler.h = colorHandler.targetHue; colorHandler.hueTween = null;
-        });
-      }
-    },
-    
-    setHue: function(hueValue) {
-      if(hueValue !== this.targetHue && this.hueQueue.indexOf(hueValue) === -1) {
-        this.hueQueue.push(hueValue);
-      }
-    },
-  
-    startLumaPulse: function() {
-      this.tween = Archonia.Engine.game.add.tween(this).to(
-          { L: 25 }, 5 * 1000, Phaser.Easing.Quartic.InOut, true, 0, -1, true
-      );
-      
-      var _this = this;
-      setInterval(function() { _this.sprite.tint = _this.getColor(); _this.setHue_(); }, 120); },
-  };
   
   var Vent = function() {
     this.phaserSetup();
@@ -101,7 +50,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       var calories = 50 / 60; // 50 cal per second
       if(this.state.nectarReserves - calories < 0) {
         if(this.state.producingPollen) {
-          this.colorHandler.setHue(0); this.state.producingPollen = false; return 0;
+          this.tweenColor.setHue(0); this.state.producingPollen = false; return 0;
         }
       }
       else { this.state.nectarReserves -= calories; return calories; }
@@ -132,7 +81,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       a.tint = 0;
     
       this.sprite.visible = true;
-      this.colorHandler = new TweenColor(this.sprite);
+      this.tweenColor = new Archonia.Engine.TweenColorVent(this.sprite, "hsl(0, 100%, 50%)");
     },
     
     tick: function() {
@@ -143,8 +92,8 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       }
       
       if(this.state.producingPollen) {
-        if(this.state.nectarReserves > pollenThreshold * 1.5) { this.colorHandler.setHue(100); }
-        else if(this.state.nectarReserves > pollenThreshold) { this.colorHandler.setHue(60); }
+        if(this.state.nectarReserves > pollenThreshold * 1.5) { this.tweenColor.setHue(100); }
+        else if(this.state.nectarReserves > pollenThreshold) { this.tweenColor.setHue(60); }
       }
       
       if(this.state.frameCount > this.state.whenToRespin) {
@@ -164,7 +113,9 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
 
       this.state.frameCount++;
       this.antwalk.tick(true, "random");
-      this.legs.tick(); }
+      this.legs.tick();
+      this.tweenColor.tick();
+    }
   };
   
   Archonia.Cosmos.TheVent = { start: function() { Archonia.Cosmos.TheVent = new Vent(); } };

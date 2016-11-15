@@ -21,15 +21,16 @@ var Drone = function(archon, dronoid) {
   // The actual values are set in launch
   this.optimalTempRange = new Archonia.Form.Range(0, 1);
   
-  this.tweenColor = new TweenColor(this);
+  this.tweenColor = new Archonia.Engine.TweenColorButton(this.button, "hsl(180, 100%, 50%)");
 };
 
 Drone.prototype = {
   decohere: function() { this.sensor.kill(); this.avatar.kill(); this.button.kill(); },
   
   launch: function(archonUniqueId, sensorScale, x, y) {
-    console.log("There are " + Archonia.Engine.Dronery.countDrones() + " fireflies alive");
     this.sensor.archonUniqueId = archonUniqueId;
+    
+    this.tweening = false;
     
     this.optimalTempRange.set(this.genome.optimalTempLo, this.genome.optimalTempHi);
 
@@ -68,62 +69,18 @@ Drone.prototype = {
   	clampedTemp = Archonia.Axioms.clamp(temp, this.genome.optimalTempLo, this.genome.optimalTempHi);
 
   	var hue = Archonia.Essence.hueRange.convertPoint(clampedTemp, this.optimalTempRange);
-  	var hsl = 'hsl(' + Math.floor(hue) + ', 100%, 50%)';
-
-    if(temp < this.genome.optimalTempLo || temp > this.genome.optimalTempHi) {
-      this.tweenColor.start(hsl);
-      
-      this.button.tint = this.tweenColor.getColor();
-      //if(this.state.archonUniqueId === 0) { console.log(this.tweenColor.hslString)}
+    if(hue < -1 || hue > 241) { debugger; } // jshint ignore: line
+    
+    if(temp < this.genome.optimalTempLo) {
+      if(!this.tweening) { this.tweenColor.start(hue, 180); this.tweening = true; }
+    } else if(temp > this.genome.optimalTempHi) {
+      if(!this.tweening) { this.tweenColor.start(hue, 60); this.tweening = true; }
     } else {
-      this.tweenColor.stop(this);
-      
-    	var rgb = tinycolor(hsl).toHex();
-
-    	this.button.tint = parseInt(rgb, 16);
+      if(this.tweening) { this.tweenColor.set(hue); this.tweening = false; }
     }
+    
+    this.tweenColor.tick();
   }
-};
-
-var TweenColor = function(drone) {
-  this.drone = drone;
-  this.tweening = false;
-  this.tinycolor = null;
-  
-  this.h = 0;
-  this.s = 0;
-  this.L = 0;
-  
-  this.tween = null;
-};
-
-TweenColor.prototype = {
-  getColor: function() {
-    this.hslString = "hsl(" + this.h + ", " + Math.floor(this.s) + "%, " + Math.floor(this.L) + "%)";
-    return parseInt(tinycolor(this.hslString).toHex(), 16);
-  },
-  
-  onComplete: function(_this) { _this.tweening = false; },
-  
-  start: function(hslString) {
-    if(!this.tweening) {
-      //console.log("Start with " + hslString);
-      var hsl = tinycolor(hslString).toHsl();
-      this.h = hsl.h; this.s = hsl.s * 100; this.L = hsl.l * 100;
-      
-      var c = (this.h < 120) ? 60 : 180;
-      
-      this.tween = Archonia.Engine.game.add.tween(this).to(
-          { h: c }, 0.5 * 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, -1, true
-        );
-  
-      this.tween.onComplete.add(this.onComplete);
-
-      this.tweening = true;
-    }
-  },
-  
-  stop: function() { if(this.tweening) { this.tween.stop(); this.tweening = false; } }
 };
 
 var spritePools = { sensors: null, avatars: null, buttons: null };
