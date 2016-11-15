@@ -11,6 +11,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
   
   var tempSwingRange = new Archonia.Form.Range(0, 500);
   var skyHueSwingRange = new Archonia.Form.Range(0, 180);
+  var currentSeasonMaxTempMagnitude = Archonia.Axioms.temperatureHi;
   
   var Year = function() {
     // Start the year in some random month, just for fun --
@@ -39,13 +40,10 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       
       this.season.tint = parseInt(h, 16);
       
-      var n = null, p = null, q = null, r = null;
-      
-      n = Math.abs(k - 180);
-      r = tempSwingRange.convertPoint(n, skyHueSwingRange);
-      p = Archonia.Axioms.temperatureLo + r;
-      q = Archonia.Axioms.temperatureHi - r;
-      Archonia.Essence.worldTemperatureRange.set(p, q);
+      var n = Math.abs(k - 180);
+      var r = tempSwingRange.convertPoint(n, skyHueSwingRange);
+
+      currentSeasonMaxTempMagnitude = Archonia.Axioms.temperatureHi - r;
     },
     
     tick: function() { this.skyHue = (this.skyHue + 360 / Archonia.Axioms.daysPerYear) % 360; this.setSeason(); }
@@ -105,7 +103,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     
     getEnergyLevel: function() {
       var level = this.rawBrightnessRange.convertPoint(this.day.darkness.alpha, Archonia.Essence.oneToZeroRange);
-      return level * Archonia.Essence.worldTemperatureRange.hi;
+      return level * currentSeasonMaxTempMagnitude;
     },
     
     noonBells: function() {
