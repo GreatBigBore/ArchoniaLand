@@ -151,7 +151,7 @@ if(typeof window === "undefined") {
       var cx = bm.context;
 
       cx.beginPath();
-      bm.circle(r, r, r, 'hsla(240, 100%, 50%, 0.01)');
+      bm.circle(r, r, r, 'hsla(240, 100%, 50%, 0.2)');
       cx.fill();
 
       Archonia.Engine.game.cache.addBitmapData('archoniaGooSensor', bm);
