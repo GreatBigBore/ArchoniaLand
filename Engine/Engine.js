@@ -63,6 +63,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     },
     
     letThereBeRanges: function() {
+      Archonia.Form.XY.setSafeScratch();
       Archonia.Essence.archonMassRange = new Archonia.Form.Range(0, 10);
       Archonia.Essence.archonTolerableTempRange = new Archonia.Form.Range(50, 200);
       Archonia.Essence.archonSizeRange = new Archonia.Form.Range(0.07, 0.125);
@@ -133,7 +134,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       
         Archonia.Cosmos.Archonery.tick();
         Archonia.Cosmos.TheVent.tick();
-      } catch(e) { console.log(e.stack); debugger; }  // jshint ignore: line
+      } catch(e) { console.log(e.stack); throw e; }
     }
     
   };

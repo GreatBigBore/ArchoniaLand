@@ -12,6 +12,7 @@ var tinycolor = tinycolor || {};
 
 var TweenColor = function(sprite, hslString) {
   this.sprite = sprite;
+  this.tweening = false;
 
   this.tinycolor = new tinycolor(hslString);
 
@@ -22,12 +23,10 @@ var TweenColor = function(sprite, hslString) {
 };
 
 TweenColor.prototype = {
-  getColor: function() {
+  tick: function() {
     this.hslString = "hsl(" + Math.floor(this.h) + ", " + Math.floor(this.s) + "%, " + Math.floor(this.L) + "%)";
-    return parseInt(this.tinycolor.fromHsl(this.hslString).toHex(), 16);
-  },
-  
-  tick: function() { this.sprite.tint = this.getColor(); }
+    this.sprite.tint = parseInt(this.tinycolor.fromHsl(this.hslString).toHex(), 16);
+  }
 };
 
 var TweenColorVent = function(sprite, hslString) {
@@ -78,27 +77,14 @@ TweenColorVent.prototype.tick = function() {
   Object.getPrototypeOf(TweenColorVent.prototype).tick.call(this);
 };
 
-var TweenColorButton = function(button, hslString) {
-  this.button = button;
-  this.tweening = false;
-  this.tinycolor = new tinycolor(hslString);
-  
-  // this is mostly just for getting default sat & light
-  // settings. Those stay the same while the hue varies
-  var m = hslString.match(/(\d+)/g);
-  this.h = m[0]; this.s = m[1]; this.L = m[2];
-  
+var TweenColorButton = function(sprite, hslString) {
+  TweenColor.call(this, sprite, hslString);
   this.tween = null;
 };
 
 TweenColorButton.prototype = Object.create(TweenColor.prototype);
 TweenColorButton.prototype.constructor = TweenColor;
 
-TweenColorButton.prototype.getColor = function() {
-  var hslString = "hsl(" + Math.floor(this.h) + ", " + Math.floor(this.s) + "%, " + Math.floor(this.L) + "%)";
-  return parseInt(this.tinycolor.fromHsl(hslString).toHex(), 16);
-};
-  
 TweenColorButton.prototype.onComplete = function(_this) { _this.tweening = false; };
   
 TweenColorButton.prototype.set = function(hue) { this.h = Math.floor(hue); this.stop(); };
@@ -119,8 +105,6 @@ TweenColorButton.prototype.start = function(hue1, hue2) {
   
 TweenColorButton.prototype.stop = function() { if(this.tweening) { this.tween.stop(); this.tweening = false; } };
   
-TweenColorButton.prototype.tick = function() { this.button.tint = this.getColor(); };
-
 Archonia.Engine.TweenColorVent = TweenColorVent;
 Archonia.Engine.TweenColorButton = TweenColorButton;
 

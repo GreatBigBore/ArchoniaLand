@@ -69,7 +69,7 @@ Drone.prototype = {
   	clampedTemp = Archonia.Axioms.clamp(temp, this.genome.optimalTempLo, this.genome.optimalTempHi);
 
   	var hue = Archonia.Essence.hueRange.convertPoint(clampedTemp, this.optimalTempRange);
-    if(hue < -1 || hue > 241) { debugger; } // jshint ignore: line
+    if(hue < -1 || hue > 241) { throw new Error("Hue out of range"); }
     
     if(temp < this.genome.optimalTempLo) {
       if(!this.tweening) { this.tweenColor.start(hue, 180); this.tweening = true; }
