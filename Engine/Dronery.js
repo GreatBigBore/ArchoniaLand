@@ -41,8 +41,10 @@ Drone.prototype = {
     this.avatar.reset(0, 0, 100);
     this.button.reset(0, 0, 100);
 
-    var avatarScale = 0.05;
-    var buttonScale = avatarScale * 5;
+    console.log("Firefly population " + Archonia.Engine.Dronery.countDrones());
+
+    var avatarScale = 1;
+    var buttonScale = 1;
 
     this.sensor.scale.setTo(sensorScale, sensorScale);
     this.sensor.anchor.setTo(0.5, 0.5);
