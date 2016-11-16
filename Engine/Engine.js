@@ -59,6 +59,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       Archonia.Cosmos.Genomery.start();
       Archonia.Cosmos.FamilyTree = new Archonia.Cosmos.FamilyTree();
       Archonia.Cosmos.TheVent.start();
+      Archonia.Cosmos.Dragonfly.start();
       Archonia.Cosmos.Archonery.start();
     },
     
@@ -90,7 +91,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       Archonia.Engine.game.load.image('toothy', 'assets/toothy.png');
       Archonia.Engine.game.load.image('vent', 'assets/urchin.png');
       Archonia.Engine.game.load.image('floor', 'assets/floor4.png');
-      Archonia.Engine.game.load.image('flare', 'assets/flare.png');
+      Archonia.Engine.game.load.image('dragonfly', 'assets/dragonfly.png');
     },
     
     render: function() {
@@ -134,6 +135,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       
         Archonia.Cosmos.Archonery.tick();
         Archonia.Cosmos.TheVent.tick();
+        Archonia.Cosmos.Dragonfly.tick();
       } catch(e) { console.log(e.stack); throw e; }
     }
     
