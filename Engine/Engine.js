@@ -53,6 +53,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     letThereBeElements: function() {
       Archonia.Cosmos.TheSun.ignite();
       Archonia.Cosmos.TheAtmosphere.breathe();
+      Archonia.Engine.Debug.start();
     },
     
     letThereBeLivingThings: function() {
