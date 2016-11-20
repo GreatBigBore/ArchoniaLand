@@ -25,6 +25,8 @@ Archonia.Form.XY = function(sourceOrMaybeX, maybeY) {
 Archonia.Form.XY.prototype = {
   add: function(a1, a2) { rp(a1, a2); sscratch.set(a1, a2); this.x += sscratch.x; this.y += sscratch.y; },
   
+  capMagnitude: function(scalar) { if(this.getMagnitude() > scalar) { this.normalize(); this.scalarMultiply(scalar); } },
+  
   dividedByScalar: function(scalar) { var scratch = Archonia.Form.XY(this); scratch.scalarDivide(scalar); return scratch; },
   
   equals: function(a1, a2) { rp(a1, a2); sscratch.set(a1, a2); return this.x === sscratch.x && this.y === sscratch.y; },
@@ -32,6 +34,10 @@ Archonia.Form.XY.prototype = {
   floor: function() { this.x = Math.floor(this.x); this.y = Math.floor(this.y); },
   
   floored: function() { var scratch = Archonia.Form.XY(this); scratch.floor(); return scratch; },
+  
+  fuzzyEqual: function(rhs, tolerance) {
+    return Archonia.Axioms.fuzzyEqual(this.x, rhs.x, tolerance) && Archonia.Axioms.fuzzyEqual(this.y, rhs.y, tolerance);
+  },
   
   getAngleFrom: function(a1, a2) { rp(a1, a2); sscratch.set(a1, a2); return Math.atan2(this.y - sscratch.y, this.x - sscratch.x); },
 
