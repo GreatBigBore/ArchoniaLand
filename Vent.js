@@ -19,6 +19,7 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       archonUniqueId: "Vent",
       firstTickAfterLaunch: true,
       frameCount: 0,
+      mass: 1,
       nectarReserves: 500,  // Calories
       position: null,
       producingPollen: false,

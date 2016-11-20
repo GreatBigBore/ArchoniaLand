@@ -5,207 +5,155 @@
 
 var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Form: {} };
 
-if(typeof window === "undefined") {
-  Archonia.Essence = require('./Essence.js');
-  Archonia.Form.XY = require('./Minions/XY.js').XY;
-}
-
 (function(Archonia) {
+  
+  var throttle = 1;
 
 Archonia.Form.Legs = function(archon) {
 
   this.state = archon.state;
+  this.sprite = archon.sprite;
 
-  this.damper = 10;
-  this.damperDecay = 0.1;
   this.running = false;
-  this.nextUpdate = 0;
-  
-  this.targetType = null;
+  this.maneuver = "";
+
+  this.thetaToVelocity = null;
+  this.thetaToTarget = null;
   this.targetPosition = Archonia.Form.XY();
-  this.targetVelocity = Archonia.Form.XY();
-  this.targetAngle = null;
+  this.vectorPToTarget = Archonia.Form.XY();
+  this.vectorVToTarget = Archonia.Form.XY();
+  this.acceleration = Archonia.Form.XY();
+  this.brakingVector = Archonia.Form.XY();
 };
 
 Archonia.Form.Legs.prototype = {
-  drift: function() {
-    this.running = false;
-  },
-  
-  launch: function(maxMVelocity, maxMAcceleration) {
-    this.maxMVelocity = maxMVelocity; this.maxMAcceleration = maxMAcceleration;
-  },
-  
-  reflect: function(vertical) {
-    this.running = true;
-    var fromZero = Archonia.Axioms.robalizeAngle(this.state.velocity.getAngleFrom(0));
-    var theta = null;
+  accelerate: function() {
+    this.state.velocity.add(this.acceleration);
+    this.state.velocity.capMagnitude(this.maxMVelocity);
     
-    if(vertical) {
-      if(this.state.velocity.x > 0) {
-
-        theta = (3 * Math.PI / 2) - fromZero;
-        this.setTargetAngle(theta);
-
-      } else  if(this.state.velocity.x < 0) {
-
-        theta = (3 * Math.PI / 2) + fromZero;
-        this.setTargetAngle(theta);
-
-      }
+    if(!this.needCourseCorrection()) {
+      this.maneuver = "holding course";
     }
   },
   
-  rotate: function(angle) {
-    // Angle from zero, not from the world center, because
-    // we're talking velocity here, not position
-    var theta = this.state.velocity.getAngleTo(0);
+  areAnglesThisClose: function(howClose) {
+    var t1 = Archonia.Axioms.robalizeAngle(this.thetaToVelocity);
+    var t2 = Archonia.Axioms.robalizeAngle(this.thetaToTarget);
     
-    theta = Archonia.Axioms.robalizeAngle(theta) + angle;
-    
-    this.targetType = 'angle';
-    this.running = true;
-    this.targetAngle = Archonia.Axioms.computerizeAngle(theta);
+    return Archonia.Axioms.fuzzyEqual(t1, t2, howClose);
   },
   
-  setTargetAngle: function(a) {
-    this.targetType = 'angle';
-    this.running = true;
-    this.targetAngle = Archonia.Axioms.computerizeAngle(a);
+  getBrakingDistance: function() {
+    var m = this.state.velocity.getMagnitude();
+    var d = Math.pow(m * throttle, 2) / (2 * this.maxMAcceleration);
+    return d;
   },
   
-  setTargetPosition: function(p, damper, damperDecay) {
-    if(damper === undefined) { damper = 10; }
-    if(damperDecay === undefined) { damperDecay = 0; }
+  holdCourse: function() {
+    this.accelerate();  // We're on course; keep accelerating to max mvel
     
-    this.currentMVelocity = this.maxMVelocity;
+    if(this.state.position.getDistanceTo(this.targetPosition) < this.getBrakingDistance()) {
+      this.acceleration.normalize();
+      this.acceleration.scalarMultiply(this.maxMAcceleration / (60 * throttle));
+      
+      this.closestApproach = this.state.position.getDistanceTo(this.targetPosition);
+      this.maneuver = "landing";
+    }
+
+    if(this.state.position.getDistanceTo(this.targetPosition) > this.closestApproach) {
+      this.state.velocity.set(0);
+      this.running = false;
+    } else {
+      this.closestApproach = this.state.position.getDistanceTo(this.targetPosition);
+    }
+  },
+  
+  land: function() {
+    var stop = false;
+    var m = this.state.position.getSignedMagnitude();
+
+    if(this.state.position.getDistanceTo(this.targetPosition) < this.acceleration.getMagnitude() * 2) {
+      stop = true;
+    } else {
+      this.state.velocity.subtract(this.acceleration);
+      
+      var n = this.state.position.getSignedMagnitude();
+      if(Math.sign(m) !== Math.sign(n)) { stop = true; }
+    }
     
-    this.damper = damper; this.damperDecay = damperDecay;
+    if(this.state.position.getDistanceTo(this.targetPosition) > this.closestApproach) {
+      stop = true;
+    } else {
+      this.closestApproach = this.state.position.getDistanceTo(this.targetPosition);
+    }
 
-    // Force update on next tick, in case we're in the middle of a maneuver
-    this.nextUpdate = 0;
-
-    this.targetType = 'point';
+    if(stop) {
+      this.state.velocity.set(0);
+      this.running = false;
+    }
+  },
+  
+  launch: function(maxMVelocity) {
+    this.maxMVelocity = maxMVelocity;
+    this.maxMAcceleration = Archonia.Axioms.maxForceOnBody / this.state.mass;
+  },
+  
+  needCourseCorrection: function() {
+    return !this.areAnglesThisClose(Math.PI / 180);
+  },
+  
+  setTargetPosition: function(p) {
     this.running = true;
+    this.maneuver = "correcting course";
     this.targetPosition.set(p);
+    
+    var a = Archonia.Axioms.robalizeAngle(this.sprite.rotation) + Math.PI / 2;
+    var b = Archonia.Axioms.computerizeAngle(a);
+    if(this.state.velocity.equals(0)) { this.state.velocity.setPolar(50, b); }
+    
+    this.previousThetaToVelocity = null;
+    this.closestApproach = Number.MAX_VALUE;
   },
-  
-  setTargetVelocity: function(v) {
-    this.currentMVelocity = this.maxMVelocity;
-
-    // Force update on next tick, in case we're in the middle of a maneuver
-    this.nextUpdate = 0;
-
-    this.targetType = 'velocity';
-    this.running = true;
-    this.targetVelocity.set(v);
-  },
-  
-  stop: function() { this.running = false; this.state.velocity.set(0); },
 
   tick: function() {
-    var p = this.state.targetPosition.get();
-    if(p) {
-      if(p.equals(0)) { this.drift(); }
-      else { this.setTargetPosition(p); }
+    if(this.state.frameCount % throttle !== 0) { return; }
+    if(this.running) {
+      switch(this.maneuver) {
+        case "correcting course": this.updateMotion(); break;
+        case "holding course": this.holdCourse(); break;
+        case "landing": this.land(); break;
+      }
     }
-
-    this.state.targetPosition.clear();
     
-    if(this.running && this.state.frameCount > this.nextUpdate) {
-      this.updateMotion();
-      this.nextUpdate = this.state.frameCount + this.damper;
-    }
+    return this.running;
   },
   
   updateMotion: function() {
-    if(!this.running) { return; }
+    // Vector from my current position to the target
+    this.vectorPToTarget.set(this.targetPosition);
+    this.vectorPToTarget.subtract(this.state.position);
     
-    this.damper -= this.damperDecay; if(this.damper < 0) { this.damper = 0; }
-
-    var optimalDeltaV = Archonia.Form.XY();
-
-    if(this.targetType === 'point') {
-      
-      // Get the target into the same frame of reference as my
-      // velocity vector. To do so, we need to get the angle between 
-      // my vector and the distance vector from me to the target
-    
-      // This is the vector from my velocity to the target position
-      optimalDeltaV.set(this.targetPosition.minus(this.state.position).plus(this.state.velocity));
-
-    } else if(this.targetType === 'angle') {
-      
-      this.targetVelocity = Archonia.Form.XY.fromPolar(this.maxMVelocity, this.targetAngle);
-      optimalDeltaV.set(this.state.velocity.minus(this.targetVelocity));
-      
-    } else if(this.targetType === 'velocity') {
-      
-      optimalDeltaV.set(this.state.velocity.minus(this.targetVelocity));
-
-    } else {
-      Archonia.Essence.hurl(new Error("Bad target type"));
+    if(this.vectorPToTarget.fuzzyEqual(this.state.velocity, 10)) {
+      this.closestApproach = this.state.position.getDistanceTo(this.targetPosition);
+      this.maneuver = "holding course";
     }
-    
-    // The magnitude of that vector
-    var optimalDeltaM = optimalDeltaV.getMagnitude();
-    
-    // And finally, the angle between my velocity and the
-    // vector from me to the target
-    var thetaToTarget = optimalDeltaV.getAngleFrom(0);
-    
-    // The optimal mVelocity from me to the target is, of
-    // course, the magnitude of the vector, that is, a magnitude
-    // that gets me there instantly. Obviously that doesn't
-    // work, so I have to get there in increments based
-    // on my current mVelocity -- which we always set, at
-    // the beginning of each maneuver, to our maximum mVelocity,
-    // and we change it only when we near the end of the
-    // maneuver, to slow down so we don't end up circling
-    // the target for all eternity
 
-    // As long as our desired mVelocity is greater than our
-    // current mVelocity (which we always set to max at the
-    // beginning of each maneuver), we need to keep going into
-    // our update
-    if(optimalDeltaM > this.currentMVelocity) { this.needUpdate = true; }
-    
-    // The best we can do on this iteration, based on our current mVelocity
-    var curtailedM = Math.min(optimalDeltaM, this.currentMVelocity);
-    
-    // Point me to the target with my maximum possible mVelocity
-    var curtailedV = Archonia.Form.XY.fromPolar(curtailedM, thetaToTarget);
+    // Vector from my current velocity to the target; this is what
+    // we would add to our velocity vector to give us a straight line
+    // to the target, if we had no speed and acceleration constraints
+    this.vectorVToTarget.set(this.vectorPToTarget);
+    this.vectorVToTarget.subtract(this.state.velocity.timesScalar(throttle));
 
-    // Now we have the best possible vector that our max mVelocity
-    // will allow. But now we have to curtail it further to comply
-    // with our maximum mAcceleration
-    var bestDeltaV = curtailedV.minus(this.state.velocity);
-    var bestDeltaM = bestDeltaV.getMagnitude();
+    // Angle between vectorP & vectorV
+    this.thetaToVelocity = this.vectorVToTarget.getAngleFrom(0);
+    this.thetaToTarget = this.vectorPToTarget.getAngleFrom(this.vectorVToTarget);
+    
+    this.acceleration.setPolar(this.maxMAcceleration, this.thetaToVelocity);
+    this.acceleration.capMagnitude(this.maxMAcceleration);
+    this.acceleration.scalarDivide(60 * throttle);
 
-    if(bestDeltaM > this.maxMAcceleration) {
-      this.needUpdate = true;
-    
-      bestDeltaV.scalarMultiply(this.maxMAcceleration / bestDeltaM);
-    }
-    
-    this.state.velocity.add(bestDeltaV);
-
-    if(this.state.velocity.getMagnitude() > this.maxMVelocity) {
-      this.state.velocity.normalize();
-      this.state.velocity.scalarMultiply(this.maxMVelocity);
-    }
-    
-    // Note: doing it this way means we're never actually setting
-    // a target position, even though I've called one of the
-    // functions setTargetPosition(). This way, it's more like we're
-    // aiming at the target, but not bothering to aim super-carefully
-    // or slow down when we get there
-    if(!this.needUpdate) { this.drift(); }  // We've reached our target velocity
+    this.accelerate();
   }
 };
 
 })(Archonia);
-
-if(typeof window === "undefined") {
-  module.exports = Archonia.Form.Legs;
-}
