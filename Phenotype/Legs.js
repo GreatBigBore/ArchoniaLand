@@ -87,10 +87,7 @@ Archonia.Form.Legs.prototype = {
       this.closestApproach = this.state.position.getDistanceTo(this.targetPosition);
     }
 
-    if(stop) {
-      this.state.velocity.set(0);
-      this.running = false;
-    }
+    if(stop) { this.stop(); }
   },
   
   launch: function(maxMVelocity) {
@@ -114,6 +111,8 @@ Archonia.Form.Legs.prototype = {
     this.previousThetaToVelocity = null;
     this.closestApproach = Number.MAX_VALUE;
   },
+  
+  stop: function() { this.state.velocity.set(0); this.running = false; },
 
   tick: function() {
     if(this.state.frameCount % throttle !== 0) { return; }

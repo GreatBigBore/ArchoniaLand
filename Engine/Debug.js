@@ -26,8 +26,23 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
       this.ctx.beginPath(); this.ctx.moveTo(from.x, from.y); this.ctx.lineTo(to.x, to.y); this.ctx.stroke();
     },
     
+    cSquare: function(center, dimension, style, width) {
+      var ul = center.minus(dimension / 2, dimension / 2);
+
+      this.ctx.strokeStyle = style; this.ctx.lineWidth = width;
+      this.ctx.beginPath(); this.ctx.rect(ul.x, ul.y, dimension, dimension); this.ctx.stroke();
+    },
+    
     rLine: function(from, to, style, width) {
       this.aLine(from, to.plus(from), style, width);
+    },
+    
+    rectangle: function(topLeft, widthHeight, style) {
+      var p = {
+        what: "rectangle", fillStyle: style, topLeft: Archonia.Form.XY(topLeft), widthHeight: Archonia.Form.XY(widthHeight)
+      };
+
+      Archonia.Engine.renderSchedule.push(p);
     },
     
     text: function(text, where) {

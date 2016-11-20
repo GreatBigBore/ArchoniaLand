@@ -31,8 +31,8 @@ var Archonia = Archonia || { Axioms: {}, Cosmos: {}, Engine: {}, Essence: {}, Fo
     archoniaSetup: function() {
       this.state.position = new Archonia.Form.Archonoid(this.sprite.body.center);
       this.state.velocity = new Archonia.Form.Archonoid(this.sprite.body.velocity);
-      this.antwalk = new Archonia.Form.Antwalk(this, 480); this.antwalk.launch();
       this.legs = new Archonia.Form.Legs(this); this.legs.launch(5, 1);
+      this.antwalk = new Archonia.Form.Antwalk(this, 480); this.antwalk.launch();
     },
     
     getPollenLevel: function(where) {

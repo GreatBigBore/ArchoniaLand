@@ -33,6 +33,8 @@ var Antwalk = function(archon, howManyTicksBetweenMoves) {
   if(howManyTicksBetweenMoves === undefined) { howManyTicksBetweenMoves = howManyTicksBetweenMoves_; }
   
   this.state = archon.state;
+  this.legs = archon.legs;
+  
   this.howManyTicksBetweenMoves = howManyTicksBetweenMoves;
   
   this.searchAnchor = Archonia.Form.XY();
@@ -59,7 +61,7 @@ Antwalk.prototype = {
 
     if(drawDebugLines && !this.trail.isEmpty()) {
       this.trail.forEach(function(ix, value) {
-        Archonia.Engine.Dbitmap.cSquare(value, squareSize, "yellow", 2);
+        Archonia.Engine.Debug.cSquare(value, squareSize, "yellow", 2);
       });
     }
 
@@ -75,8 +77,8 @@ Antwalk.prototype = {
         case "randomDownOnly": color = "red"; break;
       }
       
-      Archonia.Engine.Dbitmap.aLine(this.state.position, p, color, 2);
-      Archonia.Engine.Dbitmap.aLine(this.state.position, this.debugRandomTarget, "black", 1);
+      Archonia.Engine.Debug.aLine(this.state.position, p, color, 2);
+      Archonia.Engine.Debug.aLine(this.state.position, this.debugRandomTarget, "black", 1);
     }
   },
   
@@ -120,7 +122,7 @@ Antwalk.prototype = {
     r = p.randomizedTo(squareSize); if(!r.isInBounds()) { r.set(p); }
 
     this.debugRandomTarget.set(r);
-    this.state.targetPosition.set(r);
+    this.legs.setTargetPosition(r);
   },
   
   launch: function() {
@@ -142,7 +144,7 @@ Antwalk.prototype = {
         this.whenToIssueNextMove = 0;
       } else {
         this.whenToIssueNextMove = this.state.frameCount + this.howManyTicksBetweenMoves / 2;
-        this.state.targetPosition.set(0);
+        this.legs.stop();
       }
     }
 
