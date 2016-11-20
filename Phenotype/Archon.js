@@ -91,6 +91,7 @@ Archon.prototype = {
       frameCount: null,
       hungerInput: null,
       larvalCalorieBudget: null,
+      mass: 1,
       position: null,
       sensedArchons: null,
       sensedSkinnyManna: null,

@@ -14,6 +14,7 @@ var Gnatfly = function(archon, howManyTicksBetweenMoves) {
   
   this.state = archon.state;
   this.genome = archon.genome;
+  this.legs = archon.legs;
   this.howManyTicksBetweenMoves = howManyTicksBetweenMoves;
   
   this.lastPosition = Archonia.Form.XY();
@@ -81,7 +82,7 @@ Gnatfly.prototype = {
     
     // Just so they don't go around in straight lines all the time
     r = s.randomizedTo(Archonia.Essence.gridletSize); if(!s.isInBounds()) { r.set(s); }
-    this.state.targetPosition.set(r);
+    this.legs.setTargetPosition(r);
     this.lastPosition.set(this.state.position);
   },
   

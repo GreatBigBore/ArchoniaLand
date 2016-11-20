@@ -104,9 +104,12 @@ Archonia.Form.Legs.prototype = {
     this.maneuver = "correcting course";
     this.targetPosition.set(p);
     
-    var a = Archonia.Axioms.robalizeAngle(this.sprite.rotation) + Math.PI / 2;
-    var b = Archonia.Axioms.computerizeAngle(a);
-    if(this.state.velocity.equals(0)) { this.state.velocity.setPolar(50, b); }
+    // So far, pointing in movement direction applies only to dragonfly
+    if(this.sprite !== undefined) {
+      var a = Archonia.Axioms.robalizeAngle(this.sprite.rotation) + Math.PI / 2;
+      var b = Archonia.Axioms.computerizeAngle(a);
+      if(this.state.velocity.equals(0)) { this.state.velocity.setPolar(50, b); }
+    }
     
     this.previousThetaToVelocity = null;
     this.closestApproach = Number.MAX_VALUE;

@@ -104,9 +104,31 @@ TweenColorButton.prototype.start = function(hue1, hue2) {
 };
   
 TweenColorButton.prototype.stop = function() { if(this.tweening) { this.tween.stop(); this.tweening = false; } };
+
+var TweenColorDragonfly = function(sprite, hslString) {
+  TweenColor.call(this, sprite, hslString);
+  
+  this.hueTween = null;
+
+  this.startHuePulse();
+};
+
+TweenColorDragonfly.prototype = Object.create(TweenColor.prototype);
+TweenColorDragonfly.prototype.constructor = TweenColor;
+
+TweenColorDragonfly.prototype.startHuePulse = function() {
+  this.hueTween = Archonia.Engine.game.add.tween(this).to(
+    { h: 240 }, 5 * 1000, Phaser.Easing.Quartic.InOut, true, 0, -1, true
+  );
+};
+  
+TweenColorDragonfly.prototype.tick = function() {
+  Object.getPrototypeOf(TweenColorDragonfly.prototype).tick.call(this);
+};
   
 Archonia.Engine.TweenColorVent = TweenColorVent;
 Archonia.Engine.TweenColorButton = TweenColorButton;
+Archonia.Engine.TweenColorDragonfly = TweenColorDragonfly;
 
 })(Archonia);
 
